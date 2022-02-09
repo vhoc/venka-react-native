@@ -1,13 +1,13 @@
 import { StyleSheet, View, Text } from "react-native"
 import DataBlockHeader from "./DataBlockHeader"
 
-const DataBlock = ( { width = '100%', height = 'auto' } ) => {
+const DataBlock = ( { title = '', helpText, icon, width = '100%', height = 'auto' } ) => {
 
     const styles = StyleSheet.create({
         container: {
             width: width,
             height: height,
-            padding: '0.5rem',
+            padding: '0.7rem',
             border: '1px solid #eeeeee',
             borderRadius: '0.6rem',
         }
@@ -16,7 +16,7 @@ const DataBlock = ( { width = '100%', height = 'auto' } ) => {
     return (
         
         <View style={ styles.container }>
-            <DataBlockHeader icon={'money-bill-alt'} title="Titulo"/>
+            <DataBlockHeader icon={ icon } title={ title } helpText={ helpText }/>
             <Text>DataBlock</Text>
         </View>
 

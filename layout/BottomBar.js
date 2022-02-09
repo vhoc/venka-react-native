@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native'
 
-const BottomBar = () => {
+const BottomBar = ( { children } ) => {
 
     return (
         <View style={ styles.container }>
-            <Text>Bottom Bar</Text>
+            { children }
         </View>
     )
 
@@ -23,5 +23,6 @@ const styles = StyleSheet.create({
         padding: '2rem',
         position: 'fixed',
         bottom: '0px',
+        zIndex: 9999,
     },
 })

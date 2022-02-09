@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import DataBlock from './components/DataBlock';
+import DataBlock from './components/DataBlock/DataBlock';
 import BottomBar from './layout/BottomBar';
 import MainView from './layout/MainView';
 import TopBar from './layout/TopBar';

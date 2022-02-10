@@ -6,7 +6,7 @@ import {
     useFonts,
     RobotoCondensed_400Regular,
     RobotoCondensed_300Light_Italic,
-    RobotoCondensed_700Bold_Italic
+    RobotoCondensed_700Bold_Italic,
   } from '@expo-google-fonts/roboto-condensed'
 
 const GaugeBar = ( { idEmpresa, title, sale, goal, height} ) => {
@@ -110,6 +110,7 @@ const styles = StyleSheet.create( {
     },
     barCaptionGoal: {
         fontSize: '1em',
+        fontFamily: 'RobotoCondensed_300Light_Italic'
     },
     percent: {
         fontFamily: 'RobotoCondensed_300Light_Italic,',

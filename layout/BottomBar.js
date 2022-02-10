@@ -15,6 +15,7 @@ export default BottomBar
 const styles = StyleSheet.create({
     container: {
         width: '100vw',
+        minWidth: '320px',
         height: '115px',
         display: 'flex',
         backgroundColor: '#73b73e',

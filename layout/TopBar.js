@@ -34,6 +34,7 @@ export default TopBar
 
 const styles = StyleSheet.create({
     container: {
+        minWidth: '320px',
         width: '100%',
         height: '90px',
         display: 'flex',

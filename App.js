@@ -16,7 +16,7 @@ export default function App() {
         <MainView>
 
           <ProgressBlock title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'>
-            <GaugeBar title={'mariscos el rey obregón'} sale={75} goal={100} height={48}/>
+            <GaugeBar title={'mariscos el rey obregón'} sale={15430} goal={25000} height={48}/>
             <GaugeBar title={'mariscos el rey guaymas'} sale={50} goal={150} height={48}/>
           </ProgressBlock>
 

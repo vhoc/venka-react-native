@@ -1,8 +1,7 @@
 import { StyleSheet, View, Text } from "react-native"
-import DataBlockHeader from "./DataBlockHeader"
-import ProgressBar from "./ProgressBar"
+import BlockHeader from "./BlockHeader"
 
-const DataBlock = ( { title = '', helpText, icon, width = '100%', height = 'auto' } ) => {
+const ProgressBlock = ( { children, title = '', helpText, icon, width = '100%', height = 'auto' } ) => {
 
     const styles = StyleSheet.create({
         container: {
@@ -20,12 +19,16 @@ const DataBlock = ( { title = '', helpText, icon, width = '100%', height = 'auto
     return (
         
         <View style={ styles.container }>
-            <DataBlockHeader icon={ icon } title={ title } helpText={ helpText }/>
-            <ProgressBar title={'nombre del restaurante'} sale={50} goal={150}/>
+
+            <BlockHeader icon={ icon } title={ title } helpText={ helpText }/>
+
+            {children}
+
+            
         </View>
 
     )
 
 }
 
-export default DataBlock
+export default ProgressBlock

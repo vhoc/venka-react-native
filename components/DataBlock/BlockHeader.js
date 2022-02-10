@@ -6,7 +6,7 @@ import {
     RobotoCondensed_400Regular,
   } from '@expo-google-fonts/roboto-condensed'
 
-const DataBlockHeader = ( { icon, title, helpText = '' } ) => {
+const BlockHeader = ( { icon, title, helpText = '' } ) => {
 
     let [ fontsLoaded ] = useFonts({
         RobotoCondensed_400Regular,
@@ -46,7 +46,7 @@ const DataBlockHeader = ( { icon, title, helpText = '' } ) => {
 
 }
 
-export default DataBlockHeader
+export default BlockHeader
 
 const styles = StyleSheet.create({
     container: {

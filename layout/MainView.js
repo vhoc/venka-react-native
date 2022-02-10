@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Text, Dimensions } from "react-native"
+import React from 'react'
+import { StyleSheet, View, Text } from "react-native"
 
 const MainView = ( { children, date = 'Día 0 de Mes de 2022' } ) => {
     return (

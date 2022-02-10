@@ -1,11 +1,11 @@
-import { StyleSheet, View, Text } from "react-native"
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, View, Text, Dimensions } from "react-native"
 
 const MainView = ( { children, date = 'Día 0 de Mes de 2022' } ) => {
-
     return (
 
         <View style={ styles.container } >
-            <Text>{ date }</Text>
+            <Text style={ styles.currentDate }>{ date }</Text>
             { children }
         </View>
 
@@ -16,11 +16,18 @@ const MainView = ( { children, date = 'Día 0 de Mes de 2022' } ) => {
 export default MainView
 
 const styles = StyleSheet.create({
+    currentDate: {
+        width: '100%',
+        textAlign: 'center',
+    },
     container: {
         display: 'flex',
-        alignItems: 'center',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
         top: '90px',
-        width: '100vw',
+        paddingBottom: '125px',
+        width: '100%',
         padding: '1rem',
         gap: '1rem',
     }

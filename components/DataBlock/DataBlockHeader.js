@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     container: {
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'end',
+        alignItems: 'baseline',
         justifyContent: 'start',
         gap: '0.5rem',
     },

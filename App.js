@@ -13,9 +13,11 @@ export default function App() {
         <TopBar />
   
         <MainView>
-          <DataBlock title='venta total' helpText={`Texto de ayuda`} icon='money-bill'/>
+          <DataBlock title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill'/>
           <DataBlock title='Mesas' icon='concierge-bell'/>
-          <DataBlock title='clientes (pax)' helpText={`Texto de ayuda`} icon='chair'/>
+          <DataBlock title='clientes (pax)' helpText={`Texto de ayuda de clientes`} icon='chair'/>
+          <DataBlock title='ticket promedio' helpText={`Texto de ayuda de ticket promedio`} icon='ticket-alt'/>
+          <DataBlock title='consumo por persona' helpText={`Texto de ayuda de consumo por persona`} icon='clipboard-list'/>          
         </MainView>
   
         <BottomBar />

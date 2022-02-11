@@ -1,40 +1,78 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
-import ProgressBlock from './components/DataBlock/ProgressBlock';
+import { StyleSheet, View, Text } from 'react-native';
+import GlobalVentaTotal from './components/DataBlock/GlobalVentaTotal';
 import BottomBar from './layout/BottomBar';
 import MainView from './layout/MainView';
 import TopBar from './layout/TopBar';
-import GaugeBar from './components/DataBlock/GaugeBar';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import * as Progress from 'react-native-progress'
 
 export default function App() {
 
-    return (
-      <View style={styles.container}>
-  
-        <TopBar />
-  
-        <MainView>
+  const [ isLoading, setIsLoading ] = useState(true)
+  const [ usuario, setUsuario ] = useState()
 
-          <ProgressBlock title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'>
-            <GaugeBar title={'mariscos el rey obregón'} sale={15430} goal={25000} height={48}/>
-            <GaugeBar title={'mariscos el rey guaymas'} sale={50} goal={150} height={48}/>
-          </ProgressBlock>
+  const apiUrl = 'https://venka.app/api'
 
-          <ProgressBlock title='Mesas' icon='concierge-bell'/>
-          <ProgressBlock title='clientes (pax)' helpText={`Texto de ayuda de clientes`} icon='chair'/>
-          <ProgressBlock title='ticket promedio' helpText={`Texto de ayuda de ticket promedio`} icon='ticket-alt'/>
-          <ProgressBlock title='consumo por persona' helpText={`Texto de ayuda de consumo por persona`} icon='clipboard-list'/>
-          
-        </MainView>
-  
-        <BottomBar />
-  
-        <StatusBar style="auto" />
-  
-      </View>
-    );
+  /**
+   * Get User
+   */
+  useEffect( () => {
+    const fetchUsuario = async idUser => {
+      try {
+        const response = await axios.get( `${apiUrl}/usuario/${idUser}`, {
+          headers: {
+            'Authorization': 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid',
+            'Accept': 'application/json',
+          }
+        } )
+        setUsuario( response.data )
+        setIsLoading( false )
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    
+    fetchUsuario( 5 )
 
-  }
+  }, [] )
+    
+  return (
+    <View style={styles.container}>
+
+      <TopBar />
+
+      <MainView>
+
+        {
+          isLoading, usuario ? (
+            <>
+              <GlobalVentaTotal idUsuario={usuario.id} title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>
+              
+            </>
+          ) : (
+            <>
+              <Text>Cargando...</Text>
+              <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e"/>
+            </>
+            
+          )
+        }
+
+        
+        
+      </MainView>
+
+      <BottomBar />
+
+      <StatusBar style="auto" />
+
+    </View>
+  );
+
+}
+
 
   
 

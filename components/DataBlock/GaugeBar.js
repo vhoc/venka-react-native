@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { StyleSheet, View, Text } from "react-native"
-//import axios from 'axios'
+import axios from 'axios'
 import * as Progress from 'react-native-progress'
 import {
     useFonts,
@@ -9,26 +9,47 @@ import {
     RobotoCondensed_700Bold_Italic,
   } from '@expo-google-fonts/roboto-condensed'
 
-const GaugeBar = ( { idEmpresa, title, sale, goal, height} ) => {
+const GaugeBar = ( { idEmpresa, currentValue, limitValue, height} ) => {
 
     const [ progress, setProgress ] = useState(0.0)
+    const [ empresa, setEmpresa ] = useState({})
+    const apiUrl = 'https://venka.app/api'
     
     let [ fontsLoaded ] = useFonts({
         RobotoCondensed_400Regular,
         RobotoCondensed_300Light_Italic,
         RobotoCondensed_700Bold_Italic
-    })
+    })    
 
     useEffect( () => {
-        setProgress( sale / goal );
+        setProgress( currentValue / limitValue );
     } )
+
+    useEffect( () => {
+        const fetchEmpresa = async () => {
+            try {
+                const response = await axios.get( `${ apiUrl }/empresa/${ idEmpresa }`, {
+                    headers: {
+                        'Authorization': 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid',
+                        'Accept': 'application/json',
+                    }
+                } )
+                setEmpresa( response.data )
+            } catch (error) {
+                console.log(error)
+            }
+            
+        }
+
+        fetchEmpresa()
+    }, [] )
 
     return (
 
         <View style={ styles.container }>
 
             <View style={ styles.title }>
-                <Text style={ styles.titleText }>{ title }</Text>
+                <Text style={ styles.titleText }>{ empresa.nomcom_emp }</Text>
             </View>
 
             <View style={ styles.body }>
@@ -46,13 +67,24 @@ const GaugeBar = ( { idEmpresa, title, sale, goal, height} ) => {
                     />
 
                     <View style={ styles.barCaptionsContainer }>
-                        <Text style={ [styles.barCaption, styles.barCaptionSale] }>{`$${ Math.round(sale).toLocaleString() }`}</Text>
-                        <Text style={ [styles.barCaption, styles.barCaptionGoal] }>{`Meta: $${ Math.round(goal).toLocaleString() }`}</Text>
+                        <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(currentValue).toLocaleString() }`}</Text>
+                        {
+                            limitValue || limitValue > 0 ?
+                                <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(currentValue).toLocaleString() }`}</Text>
+                                :
+                                <Text style={ styles.barCaption }>Meta no asignada</Text>
+                        }
+                        
                     </View>
                     
                 </View>                
 
-                <Text style={ styles.percent }>{ Math.round(progress * 100) }%</Text>
+                {
+                    limitValue || limitValue > 0 ?
+                        <Text style={ styles.percent }>{ Math.round(progress * 100) }%</Text>
+                        :
+                        <></>
+                }
 
             </View>
 
@@ -78,6 +110,7 @@ const styles = StyleSheet.create( {
         marginLeft: '1rem',
     },
     titleText: {
+        textTransform: 'capitalize',
         fontSize: '1.0em',
         fontWeight: '400',
         fontFamily: 'RobotoCondensed_400Regular',
@@ -105,10 +138,10 @@ const styles = StyleSheet.create( {
         fontFamily: 'RobotoCondensed_700Bold_Italic',
         color: '#ffffff',
     },
-    barCaptionSale: {
+    barCaptionCurrent: {
         fontSize: '1.618em',
     },
-    barCaptionGoal: {
+    barCaptionLimit: {
         fontSize: '1em',
         fontFamily: 'RobotoCondensed_300Light_Italic'
     },

@@ -49,6 +49,7 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
           }
         } )
         setUsuarioEmpresas( await response.data )
+        setIsLoading(false)
       } catch (error) {
         console.log(error)
       }
@@ -90,8 +91,8 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
             'Authorization': token,
           }
         } )
-        const value = await response.data[0]        
-        
+        const value = await response.data[0]
+        //console.log(value)
         return value
       } catch (error) {
         console.log(error)
@@ -110,23 +111,23 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
       })
 
       fetchMeta( usuarioEmpresa.id, '2022', '02', '11' ).then( data => {
+        //console.log( data )
+
         
         setMetaSet( metaSet => [...metaSet, {
           idEmpresa: usuarioEmpresa.id,
           fecha: data.fecha,
           meta: Number(data.meta),
-        }] )   
+        }] )
 
       })
-
-      setIsLoading(false)
       
     } )   
 
   }, [usuarioEmpresas] )
   
   // DEBUG
-  useEffect( async () => {
+  useEffect( () => {
     //console.log( dataSet )
     //console.log( metaSet )
 
@@ -142,8 +143,7 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
       } )
     }
 
-    const merged = await mergeData( dataSet, metaSet )
-    console.log( merged )
+    const merged = mergeData( dataSet, metaSet )
     setAllData( merged )
 
     
@@ -179,17 +179,21 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
               <BlockHeader icon={ icon } title={ title } helpText={ helpText }/>
 
               {
-                isLoading === true ? (
+                isLoading, !allData.some(a => typeof a == 'object') ? (
                   <>
                       <Text style={ styles.loadingText }>Cargando...</Text>
                       <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e" width={null}/>
                   </>
                 ) : (
-                  allData.map( data => {
+                  allData.map( (data) => {
                     return (
                       <GaugeBar
-                       data={ data }
-                       height={ 48 }
+                        title={data.nombreEmpresa}
+                        key={data.idEmpresa}
+                        idEmpresa={data.idEmpresa}
+                        height={48}
+                        currentValue={ data.ventaTotal }
+                        limitValue={ data.meta }
                       />
                     )
                   } )

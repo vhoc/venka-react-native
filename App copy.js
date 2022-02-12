@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
-import ProgressBlock from './components/DataBlock/ProgressBlock';
+import ProgressBlock from './components/DataBlock/GlobalVentaTotal';
 import BottomBar from './layout/BottomBar';
 import MainView from './layout/MainView';
 import TopBar from './layout/TopBar';

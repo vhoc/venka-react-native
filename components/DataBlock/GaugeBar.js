@@ -9,7 +9,7 @@ import {
     RobotoCondensed_700Bold_Italic,
   } from '@expo-google-fonts/roboto-condensed'
 
-const GaugeBar = ( { data, height } ) => {
+const GaugeBar = ( { idEmpresa, currentValue, limitValue, height } ) => {
 
     const [ progress, setProgress ] = useState(0.0)
     const [ empresa, setEmpresa ] = useState({})
@@ -22,14 +22,14 @@ const GaugeBar = ( { data, height } ) => {
     })    
 
     useEffect( () => {
-        console.log( data.currentValue )
-        setProgress( data.currentValue / data.limitValue );
+        //console.log( data.currentValue )
+        setProgress( currentValue / limitValue );
     } )
 
     useEffect( () => {
         const fetchEmpresa = async () => {
             try {
-                const response = await axios.get( `${ apiUrl }/empresa/${ data.idEmpresa }`, {
+                const response = await axios.get( `${ apiUrl }/empresa/${ idEmpresa }`, {
                     headers: {
                         'Authorization': 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid',
                         'Accept': 'application/json',
@@ -43,7 +43,7 @@ const GaugeBar = ( { data, height } ) => {
         }
 
         fetchEmpresa()
-    }, [data] )
+    }, [idEmpresa] )
 
     return (
 
@@ -68,10 +68,10 @@ const GaugeBar = ( { data, height } ) => {
                     />
 
                     <View style={ styles.barCaptionsContainer }>
-                        <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(data.currentValue).toLocaleString() }`}</Text>
+                        <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(currentValue).toLocaleString() }`}</Text>
                         {
-                            data.limitValue || data.limitValue > 0 ?
-                                <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(data.limitValue).toLocaleString() }`}</Text>
+                            limitValue || limitValue > 0 ?
+                                <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(limitValue).toLocaleString() }`}</Text>
                                 :
                                 <Text style={ styles.barCaption }>Meta no asignada</Text>
                         }
@@ -81,7 +81,7 @@ const GaugeBar = ( { data, height } ) => {
                 </View>                
 
                 {
-                    data.limitValue || data.limitValue > 0 ?
+                    limitValue || limitValue > 0 ?
                         <Text style={ styles.percent }>{ Math.round(progress * 100) }%</Text>
                         :
                         <></>

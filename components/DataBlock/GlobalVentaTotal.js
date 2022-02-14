@@ -6,7 +6,16 @@ import GaugeBar from './GaugeBar';
 import axios from "axios";
 import * as Progress from 'react-native-progress'
 
-const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100%', height = 'auto' } ) => {
+const GlobalVentaTotal = ( { 
+  idUsuario,
+  selectedDate,
+  selectedDateLimit = selectedDate,
+  title = '',
+  helpText,
+  icon,
+  width = '100%',
+  height = 'auto'
+} ) => {
 
     const [ isLoading, setIsLoading ] = useState( true )
     const [ viewWidth, setViewWidth ] = useState(window.innerWidth)
@@ -83,16 +92,42 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
       }
     }
 
-    const fetchMeta = async( idEmpresa, año, mes, dia ) => {
+    const fetchMeta = async( idEmpresa, date, limitDate = null ) => {
       try {
-        const response = await axios.get( `${ apiUrl }/meta/${idEmpresa}/${año}/${mes}/${dia}`, {
-          headers: {
-            'Authorization': token,
-          }
-        } )
-        const value = await response.data[0]        
-        
-        return value
+
+        if ( limitDate === null || !(limitDate === date) ) {
+
+          const response = await axios.post( `${ apiUrl }/meta/rango/`,{
+            id_empresa: idEmpresa,
+            fecha_inicial: date,
+            fecha_final: limitDate,
+          }, {
+            headers: {
+              'Authorization': token,
+            }
+          } )
+
+          const value = await response.data
+          console.log(value)
+          return value
+
+        } else {
+
+          const year = date.getFullYear()
+          const month = date.getMonth()
+          const day = date.getDay()
+
+          const response = await axios.get( `${ apiUrl }/meta/${ idEmpresa }/${ year }/${ month }/${ day }`, {
+
+            headers: {
+              'Authorization': token,
+            }
+          } )
+
+          const value = await response.data[0]        
+          console.log(value)        
+          return value
+        }
       } catch (error) {
         console.log(error)
       }
@@ -109,7 +144,7 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
        }] )
       })
 
-      fetchMeta( usuarioEmpresa.id, '2022', '02', '11' ).then( data => {
+      fetchMeta( usuarioEmpresa.id, selectedDate, selectedDateLimit ).then( data => {
         
         setMetaSet( metaSet => [...metaSet, {
           idEmpresa: usuarioEmpresa.id,
@@ -143,7 +178,7 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
     }
 
     const merged = await mergeData( dataSet, metaSet )
-    console.log( merged )
+    //console.log( merged )
     setAllData( merged )
 
     
@@ -186,12 +221,20 @@ const GlobalVentaTotal = ( { idUsuario, title = '', helpText, icon, width = '100
                   </>
                 ) : (
                   allData.map( data => {
-                    return (
-                      <GaugeBar
-                       data={ data }
-                       height={ 48 }
-                      />
-                    )
+
+                    if ( data ) {
+                      //console.log( data )
+                      return (
+                        <GaugeBar
+                          key={ data.idEmpresa }
+                          idEmpresa={ data.idEmpresa }
+                          currentValue={ data.ventaTotal }
+                          limitValue={ data.meta }
+                          height={ 48 }
+                        />
+                      )
+                    }
+                    
                   } )
                   
                 )

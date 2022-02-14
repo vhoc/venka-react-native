@@ -66,7 +66,7 @@ const GlobalVentaTotal = ( {
     fetchUsuarioEmpresas()
 
 
-  }, [] )
+  }, [idUsuario] )
 
   /**
    * Fill DataSet
@@ -158,7 +158,7 @@ const GlobalVentaTotal = ( {
       
     } )   
 
-  }, [usuarioEmpresas] )
+  }, [idUsuario, usuarioEmpresas, selectedDate, selectedDateLimit] )
   
   // DEBUG
   useEffect( async () => {

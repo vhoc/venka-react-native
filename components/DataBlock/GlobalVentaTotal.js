@@ -21,9 +21,14 @@ const GlobalVentaTotal = ( {
     const [ viewWidth, setViewWidth ] = useState(window.innerWidth)
     const [ blockWidth, setBlockWidth ] = useState(window.innerWidth)
     const [ usuarioEmpresas, setUsuarioEmpresas ] = useState([])
+
     const [ dataSet, setDataSet ] = useState([])
+    const [ isDataSetLoaded, setIsDataSetLoaded ] = useState(false)
+
     const [ metaSet, setMetaSet ] = useState([])
-    const [ allData, setAllData ] = useState([])
+    const [ isMetaSetLoaded, setIsMetaSetLoaded ] = useState(false)
+
+    const [ allData, setAllData ] = useState()
 
     const apiUrl = 'https://venka.app/api'
     const token = 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid'
@@ -44,11 +49,12 @@ const GlobalVentaTotal = ( {
         }
     })
 
-  /**
-   * Get all of the user's Empresas.
-   */
+  
   useEffect( () => {
 
+    /**
+     * Get all of the user's Empresas.
+     */
     const fetchUsuarioEmpresas = async () => {
       try {
         const response = await axios.get( `${apiUrl}/usuario-empresas/${idUsuario}`, {
@@ -63,17 +69,10 @@ const GlobalVentaTotal = ( {
       }
     }
 
-    fetchUsuarioEmpresas()
-
-
-  }, [idUsuario] )
-
-  /**
-   * Fill DataSet
-   */
-  useEffect( async () => {
-
-    const fetchData = async ( idEmpresa, columnName ) => {
+    /**
+     * Fill dataSet
+     */
+     const fetchData = async ( idEmpresa, columnName ) => {
       try {
         const response = await axios.get( `${ apiUrl }/datalive/${ idEmpresa }/${ columnName }`, {
           headers: {
@@ -92,7 +91,10 @@ const GlobalVentaTotal = ( {
       }
     }
 
-    const fetchMeta = async( idEmpresa, date, limitDate = null ) => {
+    /**
+     * Fill metaSet
+     */
+     const fetchMeta = async( idEmpresa, date, limitDate = null ) => {
       try {
 
         if ( limitDate === null || !(limitDate === date) ) {
@@ -108,7 +110,7 @@ const GlobalVentaTotal = ( {
           } )
 
           const value = await response.data
-          console.log(value)
+          //console.log(value)
           return value
 
         } else {
@@ -125,7 +127,7 @@ const GlobalVentaTotal = ( {
           } )
 
           const value = await response.data[0]        
-          console.log(value)        
+          //console.log(value)        
           return value
         }
       } catch (error) {
@@ -133,56 +135,115 @@ const GlobalVentaTotal = ( {
       }
     }
 
-    usuarioEmpresas.map( usuarioEmpresa => {
+    fetchUsuarioEmpresas()
+      .then( () => {
+        // Populate dataSet and metaSet
+        usuarioEmpresas.map( usuarioEmpresa => {
 
-      fetchData( usuarioEmpresa.id, 'vta_tuno_open' ).then( data => {
-        //console.log( data )
-        setDataSet( dataSet => [...dataSet, {
-          idEmpresa: usuarioEmpresa.id,
-          nombreEmpresa: usuarioEmpresa.nomcom_emp,
-          ventaTotal: data,
-       }] )
-      })
+          fetchData( usuarioEmpresa.id, 'vta_tuno_open' ).then( data => {
+            //console.log( data )
+            setDataSet( dataSet => [...dataSet, {
+              idEmpresa: usuarioEmpresa.id,
+              nombreEmpresa: usuarioEmpresa.nomcom_emp,
+              ventaTotal: data,
+          }] )
+          })
 
-      fetchMeta( usuarioEmpresa.id, selectedDate, selectedDateLimit ).then( data => {
-        
-        setMetaSet( metaSet => [...metaSet, {
-          idEmpresa: usuarioEmpresa.id,
-          fecha: data.fecha,
-          meta: Number(data.meta),
-        }] )   
+          fetchMeta( usuarioEmpresa.id, selectedDate, selectedDateLimit ).then( data => {
+            
+            setMetaSet( metaSet => [...metaSet, {
+              idEmpresa: usuarioEmpresa.id,
+              fecha: data.fecha,
+              meta: Number(data.meta),
+            }] )
+          })
+          
+        } )
+      } )
 
-      })
+    
 
-      setIsLoading(false)
+    const mergeData = (arr1, arr2) => {
+
+      const array1 =  arr1
+      const array2 =  arr2
       
-    } )   
-
-  }, [idUsuario, usuarioEmpresas, selectedDate, selectedDateLimit] )
-  
-  // DEBUG
-  useEffect( async () => {
-    //console.log( dataSet )
-    //console.log( metaSet )
-
-    const mergeData = async (arr1, arr2) => {
-
-      const array1 = await arr1
-      const array2 = await arr2
-
       return array1.map( (item, i) => {
         if ( item.idEmpresa === array2[i].idEmpresa ) {
           return Object.assign({}, item, array2[i])
         }
       } )
     }
-
-    const merged = await mergeData( dataSet, metaSet )
+    //console.log(dataSet)
+    const merged = mergeData( dataSet, metaSet )
     //console.log( merged )
     setAllData( merged )
+    setIsLoading(false)
+
+
+
+
+    // Execute
+    
+
+
+  }, [idUsuario] )
+
+  
+  useEffect( async () => {
 
     
-  }, [metaSet] )
+
+    
+
+
+  }, [usuarioEmpresas, selectedDate, selectedDateLimit] )
+  
+  // DEBUG
+  useEffect( () => {
+
+    /*
+    Promise.all([dataSet, metaSet])
+      .then( () => {
+      dataSet.map( (item, i) => {
+          if ( item.idEmpresa === metaSet[i].idEmpresa ) {
+            const newarr = Object.assign({}, item, metaSet[i])
+            setAllData( newarr )
+            //console.log(newarr)
+          }
+        } )
+        //console.log()
+        setIsLoading(false)
+      } )
+      .catch( error => {
+        console.log(error)
+        setIsLoading(false)
+      } )
+
+      */
+
+    //console.log( dataSet )
+    //console.log( metaSet )
+
+    /*
+      const mergeData = (arr1, arr2) => {
+
+        const array1 =  arr1
+        const array2 =  arr2
+        
+        return array1.map( (item, i) => {
+          if ( item.idEmpresa === array2[i].idEmpresa ) {
+            return Object.assign({}, item, array2[i])
+          }
+        } )
+      }
+      //console.log(dataSet)
+      const merged = mergeData( dataSet, metaSet )
+      //console.log( merged )
+      setAllData( merged )
+      setIsLoading(false)*/
+    
+  }, [] )
 
   /**
    * Responsiveness
@@ -207,6 +268,29 @@ const GlobalVentaTotal = ( {
 
   }, [viewWidth] )
 
+  let merged = []
+
+  const mergeData = (arr1, arr2) => {
+
+    const array1 =  arr1
+    const array2 =  arr2
+    
+    return array1.map( (item, i) => {
+      if ( item.idEmpresa === array2[i].idEmpresa ) {
+        return Object.assign({}, item, array2[i])
+      }
+    } )
+  }
+  //console.log(dataSet)
+  if ( dataSet && metaSet ) {
+    merged = mergeData(dataSet, metaSet)
+    setAllData(merged)
+  }
+  
+  //console.log( merged )
+  //setAllData( merged )
+  //setIsLoading(false)
+
   return (
       <Shadow distance={5} startColor={'#00000010'} radius={8} viewStyle={ styles.container }>
           <View>
@@ -214,7 +298,7 @@ const GlobalVentaTotal = ( {
               <BlockHeader icon={ icon } title={ title } helpText={ helpText }/>
 
               {
-                isLoading === true ? (
+                isLoading === true || !Array.isArray(allData) || !allData.length ? (
                   <>
                       <Text style={ styles.loadingText }>Cargando...</Text>
                       <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e" width={null}/>
@@ -222,7 +306,7 @@ const GlobalVentaTotal = ( {
                 ) : (
                   allData.map( data => {
 
-                    if ( data ) {
+                    //if ( data ) {
                       //console.log( data )
                       return (
                         <GaugeBar
@@ -233,7 +317,7 @@ const GlobalVentaTotal = ( {
                           height={ 48 }
                         />
                       )
-                    }
+                    //}
                     
                   } )
                   

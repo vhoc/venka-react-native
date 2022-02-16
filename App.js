@@ -48,7 +48,7 @@ export default function App() {
         {
           isLoading, usuario ? (
             <>
-              <GlobalVentaTotal idUsuario={usuario.id} selectedDate={ new Date( '2022-02-14' ) } selectedDateLimit={ new Date( '2022-02-14' ) } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>
+              <GlobalVentaTotal idUsuario={usuario.id} selectedDate={ new Date( '2022-02-16' ) } selectedDateLimit={ new Date( '2022-02-16' ) } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>
               
             </>
           ) : (

@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text } from 'react-native'
 import BlockHeader from './BlockHeader'
 import { Shadow } from 'react-native-shadow-2'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import GaugeBar from './GaugeBar'
 import axios from 'axios'
 import * as Progress from 'react-native-progress'
@@ -16,6 +16,8 @@ const GlobalVentaTotal = ({
   width = '100%',
   height = 'auto',
 }) => {
+  const firstRender = useRef(true)
+
   const [isLoading, setIsLoading] = useState(true)
   const [viewWidth, setViewWidth] = useState(window.innerWidth)
   const [blockWidth, setBlockWidth] = useState(window.innerWidth)
@@ -152,8 +154,9 @@ const GlobalVentaTotal = ({
         console.log(error)
       }
     }
+
     let combinedData = []
-    
+
     fetchUsuarioEmpresas()
       .then((uEmpresas) => {
         // Populate dataSet and metaSet
@@ -163,6 +166,11 @@ const GlobalVentaTotal = ({
 
           fetchData(uEmpresa.id, 'vta_tuno_open')
             .then((data) => {
+              ventaData = {
+                idEmpresa: uEmpresa.id,
+                nombreEmpresa: uEmpresa.nomcom_emp,
+                ventaTotal: data,
+              }
               setDataSet((dataSet) => [
                 ...dataSet,
                 {
@@ -171,15 +179,15 @@ const GlobalVentaTotal = ({
                   ventaTotal: data,
                 },
               ])
-              ventaData = {
-                idEmpresa: uEmpresa.id,
-                nombreEmpresa: uEmpresa.nomcom_emp,
-                ventaTotal: data,
-              }
             })
             .then(() => {
               fetchMeta(uEmpresa.id, selectedDate, selectedDateLimit)
                 .then((meta) => {
+                  metaData = {
+                    idEmpresa: uEmpresa.id,
+                    fecha: meta.fecha,
+                    meta: Number(meta.meta),
+                  }
                   setMetaSet((metaSet) => [
                     ...metaSet,
                     {
@@ -188,11 +196,6 @@ const GlobalVentaTotal = ({
                       meta: Number(meta.meta),
                     },
                   ])
-                  metaData = {
-                    idEmpresa: uEmpresa.id,
-                    fecha: meta.fecha,
-                    meta: Number(meta.meta),
-                  }
                 })
                 .then(() => {
                   const mergeData = (arr1, arr2) => {
@@ -206,15 +209,13 @@ const GlobalVentaTotal = ({
             })
         })
       })
-      .then(() => {
-        setAllData(combinedData)
-      })
-      .then(() => {
-        setIsLoading(false)
-      })
-  }, [])
+      .then(() => {        
+        setAllData( combinedData )
+      }).then( () => {
+        setIsLoading( false )
+      } )
+  }, [isLoading])
 
-  
 
   return (
     <Shadow
@@ -239,17 +240,18 @@ const GlobalVentaTotal = ({
             />
           </>
         ) : (
-          allData.map((data) => {
-            //if ( data ) {
-            //console.log(data)
+          allData.map((data, index) => {
+            //if ( allData.length >= 5 ) {
+            //console.log( allData )
             return (
+              <View key={index}>
               <GaugeBar
-                key={data.idEmpresa}
                 idEmpresa={data.idEmpresa}
                 currentValue={data.ventaTotal}
                 limitValue={data.meta}
                 height={48}
               />
+              </View>
             )
             //}
           })

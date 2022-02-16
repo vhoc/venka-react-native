@@ -50,7 +50,7 @@ const GlobalVentaTotal = ({
   /**
    * Responsiveness
    */
-   useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setViewWidth(window.innerWidth)
     }
@@ -157,20 +157,26 @@ const GlobalVentaTotal = ({
 
     let combinedData = []
 
+    // Get user's empresas
     fetchUsuarioEmpresas()
       .then((uEmpresas) => {
-        // Populate dataSet and metaSet
+        // Iterate over those empresas
         uEmpresas.map((uEmpresa) => {
+
+          // Internal variables to hold the data temporarily
           let ventaData = {}
           let metaData = {}
 
+          // Get 'ventas' from each of those empresas
           fetchData(uEmpresa.id, 'vta_tuno_open')
             .then((data) => {
+              // update this internal variable "ventaData" with that data
               ventaData = {
                 idEmpresa: uEmpresa.id,
                 nombreEmpresa: uEmpresa.nomcom_emp,
                 ventaTotal: data,
               }
+              // update the state dataSet
               setDataSet((dataSet) => [
                 ...dataSet,
                 {
@@ -181,13 +187,16 @@ const GlobalVentaTotal = ({
               ])
             })
             .then(() => {
+              // Get 'metas' from each empresa
               fetchMeta(uEmpresa.id, selectedDate, selectedDateLimit)
                 .then((meta) => {
+                  // update internal variable "metaData" with the metas
                   metaData = {
                     idEmpresa: uEmpresa.id,
                     fecha: meta.fecha,
                     meta: Number(meta.meta),
                   }
+                  // update the state metaSet
                   setMetaSet((metaSet) => [
                     ...metaSet,
                     {
@@ -198,24 +207,28 @@ const GlobalVentaTotal = ({
                   ])
                 })
                 .then(() => {
+                  // Combine ventas and metas into a new array "merged"
                   const mergeData = (arr1, arr2) => {
                     if (arr1.idEmpresa === arr2.idEmpresa) {
                       return Object.assign({}, arr1, arr2)
                     }
                   }
                   const merged = mergeData(ventaData, metaData)
+
                   combinedData.push(merged)
                 })
             })
         })
       })
-      .then(() => {        
-        setAllData( combinedData )
-      }).then( () => {
-        setIsLoading( false )
-      } )
+      .then(() => {
+        // Assign the merged ventas/metas array to the state "allData"
+        setAllData(combinedData)
+      })
+      .then(() => {
+        // Allow rendering
+        setIsLoading(false)
+      })
   }, [isLoading])
-
 
   return (
     <Shadow
@@ -245,12 +258,12 @@ const GlobalVentaTotal = ({
             //console.log( allData )
             return (
               <View key={index}>
-              <GaugeBar
-                idEmpresa={data.idEmpresa}
-                currentValue={data.ventaTotal}
-                limitValue={data.meta}
-                height={48}
-              />
+                <GaugeBar
+                  idEmpresa={data.idEmpresa}
+                  currentValue={data.ventaTotal}
+                  limitValue={data.meta}
+                  height={48}
+                />
               </View>
             )
             //}

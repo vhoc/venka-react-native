@@ -19,7 +19,7 @@ const GlobalVentaTotal = ({
   const [isLoading, setIsLoading] = useState(true)
   const [viewWidth, setViewWidth] = useState(window.innerWidth)
   const [blockWidth, setBlockWidth] = useState(window.innerWidth)
-  const [usuarioEmpresas, setUsuarioEmpresas] = useState([])
+  //const [usuarioEmpresas, setUsuarioEmpresas] = useState([])
 
   const [dataSet, setDataSet] = useState([])
   const [metaSet, setMetaSet] = useState([])
@@ -45,6 +45,23 @@ const GlobalVentaTotal = ({
     },
   })
 
+  /**
+   * Responsiveness
+   */
+   useEffect(() => {
+    const handleResize = () => {
+      setViewWidth(window.innerWidth)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    if (viewWidth >= 0 && viewWidth <= 479) setBlockWidth(320)
+
+    if (viewWidth >= 480 && viewWidth <= 767) setBlockWidth(480)
+
+    if (viewWidth >= 768) setBlockWidth(480)
+  }, [idUsuario, window.innerWidth])
+
   useEffect(() => {
     /**
      * Get all of the user's Empresas.
@@ -60,7 +77,7 @@ const GlobalVentaTotal = ({
             },
           },
         )
-        setUsuarioEmpresas(await response.data)
+        //setUsuarioEmpresas(await response.data)
         return response.data
       } catch (error) {
         console.log(error)
@@ -136,6 +153,7 @@ const GlobalVentaTotal = ({
       }
     }
     let combinedData = []
+    
     fetchUsuarioEmpresas()
       .then((uEmpresas) => {
         // Populate dataSet and metaSet
@@ -189,30 +207,14 @@ const GlobalVentaTotal = ({
         })
       })
       .then(() => {
-        console.log(combinedData)
         setAllData(combinedData)
       })
       .then(() => {
         setIsLoading(false)
       })
-  }, [idUsuario])
+  }, [])
 
-  /**
-   * Responsiveness
-   */
-  useEffect(() => {
-    const handleResize = () => {
-      setViewWidth(window.innerWidth)
-    }
-
-    window.addEventListener('resize', handleResize)
-
-    if (viewWidth >= 0 && viewWidth <= 479) setBlockWidth(320)
-
-    if (viewWidth >= 480 && viewWidth <= 767) setBlockWidth(480)
-
-    if (viewWidth >= 768) setBlockWidth(480)
-  }, [viewWidth])
+  
 
   return (
     <Shadow
@@ -224,7 +226,7 @@ const GlobalVentaTotal = ({
       <View>
         <BlockHeader icon={icon} title={title} helpText={helpText} />
 
-        {isLoading === true || !Array.isArray(allData) || !allData.length ? (
+        {isLoading === true ? (
           <>
             <Text style={styles.loadingText}>Cargando...</Text>
             <Progress.Bar
@@ -239,7 +241,7 @@ const GlobalVentaTotal = ({
         ) : (
           allData.map((data) => {
             //if ( data ) {
-            console.log(data)
+            //console.log(data)
             return (
               <GaugeBar
                 key={data.idEmpresa}

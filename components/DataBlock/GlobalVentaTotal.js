@@ -61,12 +61,12 @@ const GlobalVentaTotal = ({
       )
       
       const empresas = await response.data
-      console.log( empresas )
+      //console.log( empresas )
       empresas.forEach( (empresa) => {
         empresasArray.push( empresa.id )
       } )
       //setUsuarioEmpresas( tempArray )
-      console.log(empresasArray)
+      //console.log(empresasArray)
       //setIsLoadingEmpresas( false )
     } catch ( error ) {
       console.warn( error )
@@ -94,11 +94,8 @@ const GlobalVentaTotal = ({
         console.warn(error)
       }
     } )
-
+    console.log( empresasData )
     setAllData( empresasData )
-    setIsLoading( false )
-    
-    
   }
 
   /**
@@ -124,6 +121,12 @@ const GlobalVentaTotal = ({
     fetchAll( idUsuario, 'vta_tuno_open' )
   }, [] )
 
+  useEffect( () => {    
+    if ( isLoading ) {
+       setIsLoading( false )
+       console.log('allData changed!')
+    }
+  }, [allData])
   /*
   useEffect( () => {
 

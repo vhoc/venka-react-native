@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import GaugeBar from './GaugeBar'
 import axios from 'axios'
 import * as Progress from 'react-native-progress'
+import BarsContainer from './BarsContainer'
 
 const GlobalVentaTotal = ({
   idUsuario,
@@ -72,9 +73,9 @@ const GlobalVentaTotal = ({
       console.warn( error )
     }
 
-    empresasArray.forEach( empresa => {
+    empresasArray.forEach( async empresa => {
       try {
-        const response = axios.post( `${apiUrl}/ventameta/`, {
+        const response = await axios.post( `${apiUrl}/ventameta/`, {
           id_empresa: empresa,
           fecha_inicial: selectedDate,
           column: column,
@@ -95,7 +96,7 @@ const GlobalVentaTotal = ({
       }
     } )
     console.log( empresasData )
-    setAllData( empresasData )
+    setAllData( ...allData, empresasData )
   }
 
   /**
@@ -160,17 +161,8 @@ const GlobalVentaTotal = ({
             <Text>Loading...</Text>
           ): ( 
             <View>
-              {
-                // IT DOESN'T RENDER ANYTHING WHY????
-                allData.map( (data, index) => {
-                  <GaugeBar
-                    idEmpresa={data.id_emp}
-                    //currentValue={data.venta[index]}
-                    limitValue={data.meta}
-                    height={48}
-                  />
-                } )
-              }
+              { console.log(allData)}
+              <BarsContainer allData={ allData } />
             </View>
           )
         }

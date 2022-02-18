@@ -18,12 +18,7 @@ const GlobalVentaTotal = ({
 }) => {
 
   const [isLoading, setIsLoading] = useState(true)
-  //const [viewWidth, setViewWidth] = useState(window.innerWidth)
   const [blockWidth, setBlockWidth] = useState(window.innerWidth)
-
-  //const [usuarioEmpresas, setUsuarioEmpresas] = useState([])
-  //const [allDa, setVentasData] = useState([])
-
   const [allData, setAllData] = useState([])
 
   const apiUrl = 'https://venka.app/api'
@@ -45,27 +40,65 @@ const GlobalVentaTotal = ({
     },
   })
 
-  const fetchAll = async ( column ) => {
+  
 
+  // Get ventas and meta of all 'empresas' belonging to the specified user.
+  const fetchAll = async ( idUsuario, column ) => {
+
+    let empresasArray = []
+    let empresasData = []
+
+    // Get all 'empresas' belonging to the user.
     try {
-      const response = await axios.post( `${apiUrl}/ventameta/`, {
-        id_empresa: 1,
-        fecha_inicial: selectedDate,
-        column: column,
-      },
-      {
-        headers: {
-          Authorization: token,
-          Accept: 'application/json',
-        }
-      } )
+      const response = await axios.get(
+        `${apiUrl}/usuario-empresas/${idUsuario}`,
+        {
+          headers: {
+            Authorization: token,
+            Accept: 'application/json',
+          },
+        },
+      )
       
-      setAllData( await response.data )
-      setIsLoading( false )
+      const empresas = await response.data
+      console.log( empresas )
+      empresas.forEach( (empresa) => {
+        empresasArray.push( empresa.id )
+      } )
+      //setUsuarioEmpresas( tempArray )
+      console.log(empresasArray)
+      //setIsLoadingEmpresas( false )
     } catch ( error ) {
-      console.warn(error)
+      console.warn( error )
     }
 
+    empresasArray.forEach( empresa => {
+      try {
+        const response = axios.post( `${apiUrl}/ventameta/`, {
+          id_empresa: empresa,
+          fecha_inicial: selectedDate,
+          column: column,
+        },
+        {
+          headers: {
+            Authorization: token,
+            Accept: 'application/json',
+          }
+        } ).then( response => {
+          //console.log( response.data )
+          empresasData.push( response.data )
+        } )
+        
+        //return await response.data
+      } catch ( error ) {
+        console.warn(error)
+      }
+    } )
+
+    setAllData( empresasData )
+    setIsLoading( false )
+    
+    
   }
 
   /**
@@ -87,12 +120,24 @@ const GlobalVentaTotal = ({
   }, [idUsuario])
   */
   
-  useEffect( () => {
-    
-    fetchAll( 'vta_tuno_open' )
-
+  useEffect( () => {    
+    fetchAll( idUsuario, 'vta_tuno_open' )
   }, [] )
 
+  /*
+  useEffect( () => {
+
+    if ( ! isLoadingEmpresas ) {
+      let tempArray = []
+      usuarioEmpresas.forEach( empresa => {
+        tempArray.push( fetchAll( empresa, 'vta_tuno_open' ) )// THIS DOESN'T WORK
+        //console.log(empresa)
+      })
+      
+    }
+
+  }, [isLoadingEmpresas] )*/
+  
   // poner setLoading a false
   return (
 
@@ -112,12 +157,17 @@ const GlobalVentaTotal = ({
             <Text>Loading...</Text>
           ): ( 
             <View>
-              <GaugeBar
-                idEmpresa={allData.id_emp}
-                currentValue={allData.venta[0].vta_tuno_open}
-                limitValue={allData.meta}
-                height={48}
-              />
+              {
+                // IT DOESN'T RENDER ANYTHING WHY????
+                allData.map( (data, index) => {
+                  <GaugeBar
+                    idEmpresa={data.id_emp}
+                    //currentValue={data.venta[index]}
+                    limitValue={data.meta}
+                    height={48}
+                  />
+                } )
+              }
             </View>
           )
         }

@@ -3,6 +3,8 @@ import { View, Text } from 'react-native'
 
 const BarsContainer = ( {allData} ) => {
 
+
+
     if ( !allData ) {
         return (
             <View>
@@ -14,18 +16,22 @@ const BarsContainer = ( {allData} ) => {
     return (
         <View>
              {
-                 allData.length > 0 ? 
-                    (allData.map( (data, index) => {
-                        return (<GaugeBar
+                allData.length > 0 ? (
+                    
+                    allData.map( (data, index) => (
+                        <GaugeBar
                             key={index}
                             idEmpresa={data.idEmpresa}
                             currentValue={data.ventaTotal}
                             limitValue={data.meta}
                             height={48}
-                        />)
-                    })) : (
-                        <Text>No se obtuvieron datos</Text>
+                        />
                     )
+
+                )
+                ) : (
+                    <Text>No se obtuvieron datos</Text>
+                )
             }
             
         </View>

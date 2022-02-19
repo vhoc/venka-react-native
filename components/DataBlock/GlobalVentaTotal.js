@@ -157,11 +157,11 @@ const GlobalVentaTotal = ({
         <BlockHeader icon={icon} title={title} helpText={helpText} />
 
         {
-          isLoading ? (
+          isLoading || allData.length < 1 ? (
             <Text>Loading...</Text>
           ): ( 
             <View>
-              { console.log(allData)}
+              
               <BarsContainer allData={ allData } />
             </View>
           )

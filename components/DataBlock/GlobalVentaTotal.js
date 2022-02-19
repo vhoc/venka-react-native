@@ -1,7 +1,7 @@
 import { StyleSheet, View, Text, Button } from 'react-native'
 import BlockHeader from './BlockHeader'
 import { Shadow } from 'react-native-shadow-2'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import GaugeBar from './GaugeBar'
 import axios from 'axios'
 import * as Progress from 'react-native-progress'
@@ -16,19 +16,13 @@ const GlobalVentaTotal = ({
   width = '100%',
   height = 'auto',
 }) => {
-  const firstRender = useRef(true)
 
-  const [viewWidth, setViewWidth] = useState(window.innerWidth)
   const [blockWidth, setBlockWidth] = useState(window.innerWidth)
-  //const [usuarioEmpresas, setUsuarioEmpresas] = useState([])
-  const [counter, setCounter] = useState(0)
-
-  const [dataSet, setDataSet] = useState([])
-  const [metaSet, setMetaSet] = useState([])
-
-  const [allData, setAllData] = useState()
+  const [allData, setAllData] = useState([])
 
   const [isLoading, setIsLoading] = useState(true)
+
+  const [count, setCount] = useState(0)
 
   const apiUrl = 'https://venka.app/api'
   const token = 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid'
@@ -49,10 +43,71 @@ const GlobalVentaTotal = ({
     },
   })
 
+  
+
+  // Get ventas and meta of all 'empresas' belonging to the specified user.
+  const fetchAll = async ( idUsuario, column ) => {
+
+    let empresasArray = []
+    let empresasData = []
+
+    // Get all 'empresas' belonging to the user.
+    try {
+      const response = await axios.get(
+        `${apiUrl}/usuario-empresas/${idUsuario}`,
+        {
+          headers: {
+            Authorization: token,
+            Accept: 'application/json',
+          },
+        },
+      )
+      
+      const empresas = await response.data
+      //console.log( empresas )
+      empresas.forEach( (empresa) => {
+        empresasArray.push( empresa.id )
+      } )
+      //setUsuarioEmpresas( tempArray )
+      //console.log(empresasArray)
+      //setIsLoadingEmpresas( false )
+    } catch ( error ) {
+      console.warn( error )
+    }
+
+    empresasArray.forEach( async empresa => {
+      try {
+        const response = await axios.post( `${apiUrl}/ventameta/`, {
+          id_empresa: empresa,
+          fecha_inicial: selectedDate,
+          column: column,
+        },
+        {
+          headers: {
+            Authorization: token,
+            Accept: 'application/json',
+          }
+        } ).then( response => {
+          //console.log( response.data )
+          empresasData.push( response.data )
+          setIsLoading( false )
+          console.log('allData changed!')
+        } )
+        
+        //return await response.data
+      } catch ( error ) {
+        console.warn(error)
+      }
+    } )
+    console.log( empresasData )
+    setAllData( ...allData, empresasData )
+  }
+
   /**
    * Responsiveness
-   *
-   useEffect(() => {
+   */
+  /*
+  useEffect(() => {
     const handleResize = () => {
       setViewWidth(window.innerWidth)
     }
@@ -64,203 +119,75 @@ const GlobalVentaTotal = ({
     if (viewWidth >= 480 && viewWidth <= 767) setBlockWidth(480)
 
     if (viewWidth >= 768) setBlockWidth(480)
-  }, [idUsuario, window.innerWidth])
+  }, [idUsuario])
   */
-  useEffect(() => {
-    /**
-     * Get all of the user's Empresas.
-     */
-    const fetchUsuarioEmpresas = async () => {
-      try {
-        const response = await axios.get(
-          `${apiUrl}/usuario-empresas/${idUsuario}`,
-          {
-            headers: {
-              Authorization: token,
-              Accept: 'application/json',
-            },
-          },
-        )
-        //setUsuarioEmpresas(await response.data)
-        return response.data
-      } catch (error) {
-        console.log(error)
-      }
-    }
+  
+  useEffect( () => {    
+    fetchAll( idUsuario, 'vta_tuno_open' )
+  }, [] )
 
-    /**
-     * Fill dataSet
-     */
-    const fetchData = async (idEmpresa, columnName) => {
-      try {
-        const response = await axios.get(
-          `${apiUrl}/datalive/${idEmpresa}/${columnName}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          },
-        )
-        const preValue = await response.data
+  
+  /*
+  useEffect( () => {
 
-        // Fix to prevent problems when receiving a comma ',' for decimal separator instead of a dot '.'
-        const parsed = parseFloat(preValue.replace(',', '.').replace(' ', ''))
-
-        const value = Number(parsed)
-        return value
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    /**
-     * Fill metaSet
-     */
-    const fetchMeta = async (idEmpresa, date, limitDate = null) => {
-      try {
-        if (limitDate === null || !(limitDate === date)) {
-          const response = await axios.post(
-            `${apiUrl}/meta/rango/`,
-            {
-              id_empresa: idEmpresa,
-              fecha_inicial: date,
-              fecha_final: limitDate,
-            },
-            {
-              headers: {
-                Authorization: token,
-              },
-            },
-          )
-
-          const value = await response.data
-          return value
-        } else {
-          const year = date.getFullYear()
-          const month = date.getMonth()
-          const day = date.getDay()
-
-          const response = await axios.get(
-            `${apiUrl}/meta/${idEmpresa}/${year}/${month}/${day}`,
-            {
-              headers: {
-                Authorization: token,
-              },
-            },
-          )
-
-          const value = await response.data[0]
-          return value
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    let combinedData = []
-
-    fetchUsuarioEmpresas()
-      .then((uEmpresas) => {
-        // Populate dataSet and metaSet
-        uEmpresas.map((uEmpresa) => {
-          let ventaData = {}
-          let metaData = {}
-
-          fetchData(uEmpresa.id, 'vta_tuno_open')
-            .then((data) => {
-              ventaData = {
-                idEmpresa: uEmpresa.id,
-                nombreEmpresa: uEmpresa.nomcom_emp,
-                ventaTotal: data,
-              }
-              setDataSet((dataSet) => [
-                ...dataSet,
-                {
-                  idEmpresa: uEmpresa.id,
-                  nombreEmpresa: uEmpresa.nomcom_emp,
-                  ventaTotal: data,
-                },
-              ])
-            })
-            .then(() => {
-              fetchMeta(uEmpresa.id, selectedDate, selectedDateLimit)
-                .then((meta) => {
-                  metaData = {
-                    idEmpresa: uEmpresa.id,
-                    fecha: meta.fecha,
-                    meta: Number(meta.meta),
-                  }
-                  setMetaSet((metaSet) => [
-                    ...metaSet,
-                    {
-                      idEmpresa: uEmpresa.id,
-                      fecha: meta.fecha,
-                      meta: Number(meta.meta),
-                    },
-                  ])
-                })
-                .then(() => {
-                  const mergeData = (arr1, arr2) => {
-                    if (arr1.idEmpresa === arr2.idEmpresa) {
-                      return Object.assign({}, arr1, arr2)
-                    }
-                  }
-                  const merged = mergeData(ventaData, metaData)
-                  combinedData.push(merged)
-                })
-            })
-        })
+    if ( ! isLoadingEmpresas ) {
+      let tempArray = []
+      usuarioEmpresas.forEach( empresa => {
+        tempArray.push( fetchAll( empresa, 'vta_tuno_open' ) )// THIS DOESN'T WORK
+        //console.log(empresa)
       })
-      .then(() => {        
-        setAllData( combinedData )
-      }).then( () => {
-        setIsLoading( false )
-      } )
-  }, [isLoading])
+      
+    }
 
-
+  }, [isLoadingEmpresas] )*/
+  
+  // poner setLoading a false
   return (
-    <Shadow
-      distance={5}
-      startColor={'#00000010'}
-      radius={8}
-      viewStyle={styles.container}
-    >
-      <View>
+
+    <View>
+
+      <Shadow
+        distance={5}
+        startColor={'#00000010'}
+        radius={8}
+        viewStyle={styles.container}
+      >
+
         <BlockHeader icon={icon} title={title} helpText={helpText} />
-        <Button
-          title="Test"
-          onPress={ () => {
-            setCounter(counter + 1)
-          }}/>
-        {isLoading === true ? (
-          <>
-            <Text style={styles.loadingText}>Cargando...</Text>
-            <Progress.Bar
-              animated
-              indeterminate
-              color="#73b73e"
-              borderColor="#73b73e"
-              width={null}
-              height={10}
-            />
-          </>
-        ) : (
-          allData.map((data, index) => (
-              <View key={index}>
-              <GaugeBar
-                idEmpresa={data.idEmpresa}
-                currentValue={data.ventaTotal}
-                limitValue={data.meta}
-                height={48}
-              />
-              </View>
-            )
-            //}
+        <Button title="Test" onPress={ () => {
+          setCount(count+1)
+        } } />
+        {
+          isLoading || allData.length < 1 ? (
+            <Text>Loading...</Text>
+          ): ( 
+            <View>              
+              {
+                allData.length > 0 ? (
+                    
+                    allData.map( (data, index) => (
+                        <GaugeBar
+                            key={index}
+                            idEmpresa={data.id_emp}
+                            currentValue={data.venta[0].vta_tuno_open}
+                            limitValue={data.meta}
+                            height={48}
+                        />
+                    )
+
+                )
+                ) : (
+                    <Text>No se obtuvieron datos</Text>
+                )
+            }
+            </View>
           )
-        )}
-      </View>
-    </Shadow>
+        }
+
+      </Shadow>
+
+    </View>
+
   )
 }
 

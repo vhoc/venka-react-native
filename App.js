@@ -54,7 +54,7 @@ export default function App() {
           ) : (
             <>
               <Text>Cargando...</Text>
-              <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e"/>
+              <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e" height={30}/>
             </>
             
           )

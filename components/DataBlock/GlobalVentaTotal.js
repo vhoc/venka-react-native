@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View, Text, Button } from 'react-native'
 import BlockHeader from './BlockHeader'
 import { Shadow } from 'react-native-shadow-2'
 import { useEffect, useState, useRef } from 'react'
@@ -18,15 +18,17 @@ const GlobalVentaTotal = ({
 }) => {
   const firstRender = useRef(true)
 
-  const [isLoading, setIsLoading] = useState(true)
   const [viewWidth, setViewWidth] = useState(window.innerWidth)
   const [blockWidth, setBlockWidth] = useState(window.innerWidth)
   //const [usuarioEmpresas, setUsuarioEmpresas] = useState([])
+  const [counter, setCounter] = useState(0)
 
   const [dataSet, setDataSet] = useState([])
   const [metaSet, setMetaSet] = useState([])
 
   const [allData, setAllData] = useState()
+
+  const [isLoading, setIsLoading] = useState(true)
 
   const apiUrl = 'https://venka.app/api'
   const token = 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid'
@@ -49,7 +51,7 @@ const GlobalVentaTotal = ({
 
   /**
    * Responsiveness
-   */
+   *
    useEffect(() => {
     const handleResize = () => {
       setViewWidth(window.innerWidth)
@@ -63,7 +65,7 @@ const GlobalVentaTotal = ({
 
     if (viewWidth >= 768) setBlockWidth(480)
   }, [idUsuario, window.innerWidth])
-
+  */
   useEffect(() => {
     /**
      * Get all of the user's Empresas.
@@ -226,7 +228,11 @@ const GlobalVentaTotal = ({
     >
       <View>
         <BlockHeader icon={icon} title={title} helpText={helpText} />
-
+        <Button
+          title="Test"
+          onPress={ () => {
+            setCounter(counter + 1)
+          }}/>
         {isLoading === true ? (
           <>
             <Text style={styles.loadingText}>Cargando...</Text>
@@ -240,10 +246,7 @@ const GlobalVentaTotal = ({
             />
           </>
         ) : (
-          allData.map((data, index) => {
-            //if ( allData.length >= 5 ) {
-            //console.log( allData )
-            return (
+          allData.map((data, index) => (
               <View key={index}>
               <GaugeBar
                 idEmpresa={data.idEmpresa}
@@ -254,7 +257,7 @@ const GlobalVentaTotal = ({
               </View>
             )
             //}
-          })
+          )
         )}
       </View>
     </Shadow>

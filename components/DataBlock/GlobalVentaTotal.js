@@ -43,64 +43,60 @@ const GlobalVentaTotal = ({
     },
   })
 
-  
+  const fetchEmpresasDeUsuario = async () => {
+    try {
+      // Get all 'empresas' belonging to the user.
+      const endPoint = `${apiUrl}/usuario-empresas/${idUsuario}`
+      const headers = { headers: { Authorization: token, Accept: 'application/json' } }
+
+      const response = await axios.get(endPoint,headers)
+      return  response.data
+    } catch ( error ) {
+      console.warn(`fetchEmpresasDeUsuario - Error tratando de obtener las empresas del usuario: ${error}`)
+      return []
+    }
+  }
 
   // Get ventas and meta of all 'empresas' belonging to the specified user.
+  const getIdsEmpresas = (empresaIds) => {
+    console.log(`getIdsEmpresas - Empresas: ${empresaIds}`)
+    const empresasArray = empresaIds.map( empresa => empresa.id )
+    console.log(`getIdsEmpresas - IDs: ${empresasArray}`)
+    return empresasArray
+  }
+
+  const fetchEmpresasDeseada = async (empresaId, column) => {
+    try {
+      const body = { id_empresa: empresaId, fecha_inicial: selectedDate, column: column }
+      const headers = { headers: { Authorization: token, Accept: 'application/json'} }
+      const response = await axios.post( `${apiUrl}/ventameta/`, body ,headers)
+
+      return response
+    } catch (error) {
+      console.warn(`fetchEmpresaDeseada - Error cuando se hace post: ${error}`);
+      return []
+    }
+      
+  }
   const fetchAll = async ( idUsuario, column ) => {
 
-    let empresasArray = []
-    let empresasData = []
+    const empresasDelUsuario = await fetchEmpresasDeUsuario();
+    const idsEmpresa = await getIdsEmpresas(empresasDelUsuario)
+    const resultEmpresas = []
 
-    // Get all 'empresas' belonging to the user.
-    try {
-      const response = await axios.get(
-        `${apiUrl}/usuario-empresas/${idUsuario}`,
-        {
-          headers: {
-            Authorization: token,
-            Accept: 'application/json',
-          },
-        },
-      )
-      
-      const empresas = await response.data
-      //console.log( empresas )
-      empresas.forEach( (empresa) => {
-        empresasArray.push( empresa.id )
-      } )
-      //setUsuarioEmpresas( tempArray )
-      //console.log(empresasArray)
-      //setIsLoadingEmpresas( false )
-    } catch ( error ) {
-      console.warn( error )
-    }
-
-    empresasArray.forEach( async empresa => {
+    idsEmpresa.forEach( async empresaId => {
       try {
-        const response = await axios.post( `${apiUrl}/ventameta/`, {
-          id_empresa: empresa,
-          fecha_inicial: selectedDate,
-          column: column,
-        },
-        {
-          headers: {
-            Authorization: token,
-            Accept: 'application/json',
-          }
-        } ).then( response => {
-          //console.log( response.data )
-          empresasData.push( response.data )
-          setIsLoading( false )
-          console.log('allData changed!')
-        } )
-        
-        //return await response.data
+
+        const empresas = await fetchEmpresasDeseada(empresaId, column)
+        console.log(`fetchAll forEach -> empresaId: ${empresaId} | Response: ${empresas}`)
+
+        resultEmpresas.push(empresas.data)
       } catch ( error ) {
         console.warn(error)
       }
-    } )
-    console.log( empresasData )
-    setAllData( ...allData, empresasData )
+    })
+
+    return resultEmpresas
   }
 
   /**
@@ -122,8 +118,11 @@ const GlobalVentaTotal = ({
   }, [idUsuario])
   */
   
-  useEffect( () => {    
-    fetchAll( idUsuario, 'vta_tuno_open' )
+  useEffect(async () => {    
+    const empresas = await fetchAll( idUsuario, 'vta_tuno_open' )
+    setIsLoading(false)
+    setAllData(...allData, empresas)
+    setCount(0)
   }, [] )
 
   
@@ -142,8 +141,35 @@ const GlobalVentaTotal = ({
   }, [isLoadingEmpresas] )*/
   
   // poner setLoading a false
-  return (
+  
+  const renderComponent = () => {
+    if (isLoading) {
+      return <Text>Loading...</Text>
+    } else {
+      return (
+        <View>              
+              {
+                // allData.length < 1 ?  <Text>No se obtuvieron datos</Text> : (
+                    
+                    allData.map( (data, index) => {
+                      console.log(`imprimiendo JSX, con estado: ${allData}`);
+                      return (<GaugeBar
+                          key={index}
+                          idEmpresa={data.id_emp}
+                          currentValue={data.venta[0].vta_tuno_open}
+                          limitValue={data.meta}
+                          height={48}
+                        />)
+                    }) //END-MAP
 
+                // )
+            }
+        </View>
+      )
+    }
+  }
+
+  return (
     <View>
 
       <Shadow
@@ -154,36 +180,13 @@ const GlobalVentaTotal = ({
       >
 
         <BlockHeader icon={icon} title={title} helpText={helpText} />
-        <Button title="Test" onPress={ () => {
-          setCount(count+1)
-        } } />
+        <Button title="Test" onPress={() => {
+            setCount(count+1)
+          }}
+        />
         {
-          isLoading || allData.length < 1 ? (
-            <Text>Loading...</Text>
-          ): ( 
-            <View>              
-              {
-                allData.length > 0 ? (
-                    
-                    allData.map( (data, index) => (
-                        <GaugeBar
-                            key={index}
-                            idEmpresa={data.id_emp}
-                            currentValue={data.venta[0].vta_tuno_open}
-                            limitValue={data.meta}
-                            height={48}
-                        />
-                    )
-
-                )
-                ) : (
-                    <Text>No se obtuvieron datos</Text>
-                )
-            }
-            </View>
-          )
+            renderComponent()
         }
-
       </Shadow>
 
     </View>

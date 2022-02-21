@@ -120,8 +120,8 @@ const GlobalVentaTotal = ({
   
   useEffect(async () => {    
     const empresas = await fetchAll( idUsuario, 'vta_tuno_open' )
-    setIsLoading(false)
     setAllData(...allData, empresas)
+    setIsLoading(false)
     setCount(0)
   }, [] )
 

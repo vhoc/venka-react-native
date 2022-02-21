@@ -61,7 +61,6 @@ const GlobalVentaTotal = ({
    */
   useEffect(() => {
     const handleResize = () => {
-      //setViewWidth(window.innerWidth)
       viewWidth.current = window.innerWidth
     }
 
@@ -75,8 +74,7 @@ const GlobalVentaTotal = ({
   }, [viewWidth.current])
   
   
-  useEffect(async () => {    
-    //const empresas = await fetchAll( idUsuario, 'vta_tuno_open' )
+  useEffect(async () => {
     const empresas = await fetchAll( idUsuario, 'vta_tuno_open' )
     setAllData(...allData, empresas)
     console.log(empresas)

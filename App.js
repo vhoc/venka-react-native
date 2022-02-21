@@ -72,9 +72,7 @@ export default function App() {
   );
 
 }
-
-
-  
+ 
 
 const styles = StyleSheet.create({
   container: {
@@ -82,6 +80,6 @@ const styles = StyleSheet.create({
     minWidth: '320px',
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'start',
+    justifyContent: 'flex-start',
   },
 });

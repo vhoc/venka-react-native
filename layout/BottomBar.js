@@ -1,10 +1,11 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Button } from 'react-native'
 
-const BottomBar = ( { children } ) => {
+const BottomBar = ( { children, dateSetAnterior } ) => {
 
     return (
         <View style={ styles.container }>
             { children }
+            {/*<Button onPress={ dateSetAnterior } title="Anterior"/>*/}
         </View>
     )
 

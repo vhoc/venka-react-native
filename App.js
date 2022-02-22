@@ -1,3 +1,4 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
 import GlobalVentaTotal from './components/DataBlock/GlobalVentaTotal';
@@ -8,10 +9,28 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import * as Progress from 'react-native-progress'
 
+//export const DateContext = React.createContext()
+
 export default function App() {
 
   const [ isLoading, setIsLoading ] = useState(true)
   const [ usuario, setUsuario ] = useState()
+
+  const [ selectedDate, setSelectedDate ] = useState( new Date().toISOString().slice(0, 10) )
+  const [ selectedDateLimit, setSelectedDateLimit ] = useState( new Date().toISOString().slice(0, 10) )
+
+  const dateSetAnterior = () => {
+    setSelectedDate( () => {
+      const newDate = new Date()
+      newDate.setDate( newDate.getDate() - 1 )
+      return newDate.toISOString().slice(0, 10)
+    })
+    setSelectedDateLimit( () => {
+      const newDate = new Date()
+      newDate.setDate( newDate.getDate() - 1 )
+      return newDate.toISOString().slice(0, 10)
+    } )
+  }
 
   const apiUrl = 'https://venka.app/api'
 
@@ -21,12 +40,8 @@ export default function App() {
   useEffect( () => {
     const fetchUsuario = async idUser => {
       try {
-        const response = await axios.get( `${apiUrl}/usuario/${idUser}`, {
-          headers: {
-            'Authorization': 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid',
-            'Accept': 'application/json',
-          }
-        } )
+        const headers = { headers: { 'Authorization': 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid', 'Accept': 'application/json' } }
+        const response = await axios.get( `${apiUrl}/usuario/${idUser}`, headers )
         setUsuario( response.data )
         setIsLoading( false )
       } catch (error) {
@@ -36,7 +51,7 @@ export default function App() {
     
     fetchUsuario( 5 )
 
-  }, [] )
+  }, [selectedDate, selectedDateLimit] )
     
   return (
     <View style={styles.container}>
@@ -48,14 +63,14 @@ export default function App() {
         {
           isLoading, usuario ? (
             <>
-              <GlobalVentaTotal idUsuario={usuario.id} selectedDate={ new Date( '2022-02-16' ) } selectedDateLimit={ new Date( '2022-02-16' ) } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>
+              <GlobalVentaTotal idUsuario={usuario.id} selectedDate={ selectedDate } selectedDateLimit={ selectedDateLimit } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>
               
             </>
           ) : (
-            <>
+            <View style={ styles.loading }>
               <Text>Cargando...</Text>
               <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e" height={30}/>
-            </>
+            </View>
             
           )
         }
@@ -64,7 +79,7 @@ export default function App() {
         
       </MainView>
 
-      <BottomBar />
+      <BottomBar dateSetAnterior={ dateSetAnterior }/>
 
       <StatusBar style="auto" />
 
@@ -82,4 +97,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  loading: {
+    display: 'flex',
+    justifyContent: 'center'
+  }
 });

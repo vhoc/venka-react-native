@@ -14,6 +14,7 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
       id_emp: 0,
       fecha_inicial: selectedDate,
       fecha_final: selectedDateLimit,
+      nombre_emp: '',
       venta: 0,
       meta: 0,
     },
@@ -124,9 +125,11 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
             allData.map( (data, index) => {
               return (<GaugeBar
                   key={index}
-                  idEmpresa={data.id_emp}
-                  currentValue={data.venta}
-                  limitValue={data.meta}
+                  idEmpresa={ data.id_emp }
+                  title={ data.nombre_emp }
+                  dataColumn={ `vta_tuno_open` }
+                  startDate={ startDate }
+                  endDate={ endDate }
                   height={48}
                 />)
             }) //END-MAP

@@ -9,11 +9,19 @@ import {
     RobotoCondensed_700Bold_Italic,
   } from '@expo-google-fonts/roboto-condensed'
 
-const GaugeBar = ( { idEmpresa, currentValue, limitValue, height } ) => {
+const GaugeBar = ( { idEmpresa, title, dataColumn, startDate, endDate, height } ) => {
 
+    const [ empresa, setEmpresa ] = useState({
+        fecha_inicial: startDate,
+        fecha_final: endDate,
+        id_emp: 0,
+        venta: 0,
+        meta: 0,
+    })
     const [ progress, setProgress ] = useState(0.0)
-    const [ empresa, setEmpresa ] = useState({})
+
     const apiUrl = 'https://venka.app/api'
+    const token = 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid'
     
     let [ fontsLoaded ] = useFonts({
         RobotoCondensed_400Regular,
@@ -22,35 +30,36 @@ const GaugeBar = ( { idEmpresa, currentValue, limitValue, height } ) => {
     })    
 
     useEffect( () => {
-        //console.log( data.currentValue )
-        setProgress( currentValue / limitValue );
-    } )
 
-    useEffect( () => {
-        const fetchEmpresa = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get( `${ apiUrl }/empresa/${ idEmpresa }`, {
-                    headers: {
-                        'Authorization': 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid',
-                        'Accept': 'application/json',
-                    }
-                } )
+                const body = { id_empresa: idEmpresa, fecha_inicial: startDate, fecha_final: endDate, column: dataColumn }
+                const headers = { headers: { Authorization: token, Accept: 'applicaton/json' } }
+                const response = await axios.post( `${apiUrl}/empresa/ventatotal/`, body, headers )
+                console.log( response.data )
                 setEmpresa( response.data )
-            } catch (error) {
-                console.log(error)
+                //return response.data
+            } catch ( error ) {
+                console.warn( `Error al obtener datos: ${error}` )
+                return []
             }
-            
         }
 
-        fetchEmpresa()
-    }, [idEmpresa] )
+        fetchData()
+    }, [] )
+    
+    useEffect( () => {
+        if ( empresa.venta && empresa.meta ) {
+            setProgress( empresa.venta / empresa.meta );
+        }
+    }, [empresa] )
 
     return (
 
         <View style={ styles.container }>
 
             <View style={ styles.title }>
-                <Text style={ styles.titleText }>{ empresa.nomcom_emp }</Text>
+                <Text style={ styles.titleText }>{ title }</Text>
             </View>
 
             <View style={ styles.body }>
@@ -68,10 +77,10 @@ const GaugeBar = ( { idEmpresa, currentValue, limitValue, height } ) => {
                     />
 
                     <View style={ styles.barCaptionsContainer }>
-                        <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(currentValue).toLocaleString() }`}</Text>
+                        <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(empresa.venta).toLocaleString() }`}</Text>
                         {
-                            limitValue || limitValue > 0 ?
-                                <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(limitValue).toLocaleString() }`}</Text>
+                            empresa.meta || empresa.meta > 0 ?
+                                <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(empresa.meta).toLocaleString() }`}</Text>
                                 :
                                 <Text style={ styles.barCaption }>Meta no asignada</Text>
                         }
@@ -81,7 +90,7 @@ const GaugeBar = ( { idEmpresa, currentValue, limitValue, height } ) => {
                 </View>                
 
                 {
-                    limitValue || limitValue > 0 ?
+                    empresa.meta || empresa.meta > 0 ?
                         <Text style={ styles.percent }>{ Math.round(progress * 100) }%</Text>
                         :
                         <></>

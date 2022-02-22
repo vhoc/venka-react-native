@@ -32,6 +32,17 @@ export default function App() {
     } )
   }
 
+  const dateSetActual = () => {
+    setSelectedDate( () => {
+      const newDate = new Date()
+      return newDate.toISOString().slice(0, 10)
+    })
+    setSelectedDateLimit( () => {
+      const newDate = new Date()
+      return newDate.toISOString().slice(0, 10)
+    } )
+  }
+
   const apiUrl = 'https://venka.app/api'
 
   /**
@@ -69,7 +80,7 @@ export default function App() {
           ) : (
             <View style={ styles.loading }>
               <Text>Cargando...</Text>
-              <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e" height={30}/>
+              <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e" height={10}/>
             </View>
             
           )
@@ -79,7 +90,7 @@ export default function App() {
         
       </MainView>
 
-      <BottomBar dateSetAnterior={ dateSetAnterior }/>
+      <BottomBar dateSetActual={ dateSetActual } dateSetAnterior={ dateSetAnterior }/>
 
       <StatusBar style="auto" />
 

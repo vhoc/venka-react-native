@@ -8,6 +8,7 @@ import TopBar from './layout/TopBar';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import * as Progress from 'react-native-progress'
+import { venkaFormat } from './Helpers';
 
 //export const DateContext = React.createContext()
 
@@ -16,30 +17,30 @@ export default function App() {
   const [ isLoading, setIsLoading ] = useState(true)
   const [ usuario, setUsuario ] = useState()
 
-  const [ selectedDate, setSelectedDate ] = useState( new Date().toLocaleDateString( 'es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' } ) )
-  const [ selectedDateLimit, setSelectedDateLimit ] = useState( new Date().toLocaleDateString( 'es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' } ) )
+  const [ selectedDate, setSelectedDate ] = useState( venkaFormat( new Date() ) )
+  const [ selectedDateLimit, setSelectedDateLimit ] = useState( venkaFormat( new Date() ) )
 
   const dateSetAnterior = () => {
     setSelectedDate( () => {
       const newDate = new Date()
       newDate.setDate( newDate.getDate() - 1 )
-      return newDate.toLocaleDateString()
+      return venkaFormat( newDate )
     })
     setSelectedDateLimit( () => {
       const newDate = new Date()
       newDate.setDate( newDate.getDate() - 1 )
-      return newDate.toLocaleDateString()
+      return venkaFormat( newDate )
     } )
   }
 
   const dateSetActual = () => {
     setSelectedDate( () => {
       const newDate = new Date()
-      return newDate.toLocaleDateString()
+      return venkaFormat( newDate )
     })
     setSelectedDateLimit( () => {
       const newDate = new Date()
-      return newDate.toLocaleDateString()
+      return venkaFormat( newDate )
     } )
   }
 

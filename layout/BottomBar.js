@@ -1,12 +1,18 @@
-import { View, Text, StyleSheet, Button } from 'react-native'
+import { View, StyleSheet, Button } from 'react-native'
+import { useState } from 'react'
 
-const BottomBar = ( { dateSetActual, dateSetAnterior } ) => {
+const BottomBar = ( { dateSetActual, dateSetAnterior, periodDay, periodMonth, periodWeek, periodYear } ) => {
+
+    
 
     return (
         <View style={ styles.container }>
             
             <View style={ styles.topRow } >
-
+                <Button onPress={ periodDay } title="Día" />
+                <Button onPress={ periodWeek } title="Semana" />
+                <Button onPress={ periodMonth } title="Día" />
+                <Button onPress={ periodYear } title="Año" />
             </View>
 
             <View style={ styles.bottomRow } >
@@ -35,6 +41,10 @@ const styles = StyleSheet.create({
         position: 'fixed',
         bottom: '0px',
         zIndex: 9999,
+    },
+    topRow: {
+        display: 'flex',
+        flexDirection: 'row',
     },
     bottomRow: {
         display: 'flex',

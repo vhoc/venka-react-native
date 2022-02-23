@@ -20,6 +20,7 @@ export default function App() {
   const [ selectedDate, setSelectedDate ] = useState( venkaFormat( new Date() ) )
   const [ selectedDateLimit, setSelectedDateLimit ] = useState( venkaFormat( new Date() ) )
 
+  // Periodo Botón: ANTERIOR
   const dateSetAnterior = () => {
     setSelectedDate( () => {
       const newDate = new Date()
@@ -33,6 +34,7 @@ export default function App() {
     } )
   }
 
+  // Periodo Botón: ACTUAL
   const dateSetActual = () => {
     setSelectedDate( () => {
       const newDate = new Date()
@@ -73,15 +75,16 @@ export default function App() {
       <MainView>
 
         {
-          isLoading, usuario ? (
-            <>
-              <GlobalVentaTotal idUsuario={usuario.id} selectedDate={ selectedDate } selectedDateLimit={ selectedDateLimit } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>
-              
-            </>
-          ) : (
+          !isLoading, !usuario ? (
             <View style={ styles.loading }>
               <Text>Cargando...</Text>
               <Progress.Bar animated indeterminate color="#73b73e" borderColor="#73b73e" height={10}/>
+            </View>
+          ) : (
+            
+            <View style={ styles.main }>
+              <Text style={ styles.currentDate }>{ selectedDate }</Text>
+              <GlobalVentaTotal idUsuario={usuario.id} selectedDate={ selectedDate } selectedDateLimit={ selectedDateLimit } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>            
             </View>
             
           )
@@ -108,6 +111,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  },
+  main: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loading: {
     display: 'flex',

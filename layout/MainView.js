@@ -1,11 +1,10 @@
 import React from 'react'
 import { StyleSheet, View, Text } from "react-native"
 
-const MainView = ( { children, date = 'Día 0 de Mes de 2022' } ) => {
+const MainView = ( { children } ) => {
     return (
 
         <View style={ styles.container } >
-            <Text style={ styles.currentDate }>{ date }</Text>
             { children }
         </View>
 

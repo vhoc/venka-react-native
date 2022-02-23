@@ -43,7 +43,7 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
       color: '#73b73e',
     },
   })
-
+/*
   const dateSetAnterior = () => {
     setStartDate( () => {
       const newDate = new Date()
@@ -67,9 +67,9 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
       const newDate = new Date()
       return newDate.toISOString().slice(0, 10)
     } )
-  }
+  }*/
 
-  const fetchAll = async ( idUsuario, column ) => {
+  const fetchAll = async ( idUsuario, column, startDate, endDate ) => {
     try {
       const body = { user_id: idUsuario, fecha_inicial: startDate, fecha_final: endDate, column: column }
       const headers = { headers: { Authorization: token, Accept: 'applicaton/json' } }
@@ -100,13 +100,19 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
    * Obtain data and update state.
    */
   useEffect(async () => {
-    if ( isLoading ) {
-      const empresas = await fetchAll( idUsuario, 'vta_tuno_open' )
+    
+    //if ( isLoading ) {
+      console.log("main useEffect re-run")
+      //console.log(selectedDate)
+      setIsLoading(true)
+      setStartDate( selectedDate )
+      setEndDate( selectedDateLimit )
+      const empresas = await fetchAll( idUsuario, 'vta_tuno_open', selectedDate, selectedDateLimit  )
       setAllData(empresas)
       setIsLoading(false)
-    }
+    //}
     
-  }, [isLoading] )
+  }, [selectedDate, selectedDateLimit] )
 
   /**
    * Elements to be rendered

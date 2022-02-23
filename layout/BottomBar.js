@@ -1,23 +1,44 @@
 import { View, StyleSheet, Button } from 'react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const BottomBar = ( { dateSetActual, dateSetAnterior, periodDay, periodMonth, periodWeek, periodYear } ) => {
 
-    
+    const [ toggleSwitch, setToggleSwitch ] = useState({
+        range: 'day',
+        period: 'current',
+    })
+
+    const handleRangeSwitch = range => {
+        setToggleSwitch( toggleSwitch => ({
+            ...toggleSwitch,
+                range: range,
+        }))
+    }
+
+    const handlePeriodSwitch = period => {
+        setToggleSwitch( toggleSwitch => ({
+            ...toggleSwitch,
+                period: period,
+        }))
+    }
+
+    useEffect( () => {
+        
+    }, [toggleSwitch] )
 
     return (
         <View style={ styles.container }>
             
             <View style={ styles.topRow } >
-                <Button onPress={ periodDay } title="Día" />
-                <Button onPress={ periodWeek } title="Semana" />
-                <Button onPress={ periodMonth } title="Día" />
-                <Button onPress={ periodYear } title="Año" />
+                <Button onPress={ () => { handleRangeSwitch('day') } } title="Día" />
+                <Button onPress={ () => { handleRangeSwitch('week') } } title="Semana" />
+                <Button onPress={ () => { handleRangeSwitch('month') } } title="Mes" />
+                <Button onPress={ () => { handleRangeSwitch('year') } } title="Año" />
             </View>
 
             <View style={ styles.bottomRow } >
-                <Button onPress={ dateSetActual } title="Actual"/>
-                <Button onPress={ dateSetAnterior } title="Anterior"/>
+                <Button onPress={ () => { handlePeriodSwitch('current') } } title="Actual"/>
+                <Button onPress={ () => { handlePeriodSwitch('last') } } title="Anterior"/>
             </View>
 
             

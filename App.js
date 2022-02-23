@@ -16,8 +16,8 @@ export default function App() {
   const [ isLoading, setIsLoading ] = useState(true)
   const [ usuario, setUsuario ] = useState()
 
-  const [ selectedDate, setSelectedDate ] = useState( new Date().toLocaleDateString() )
-  const [ selectedDateLimit, setSelectedDateLimit ] = useState( new Date().toLocaleDateString() )
+  const [ selectedDate, setSelectedDate ] = useState( new Date().toLocaleDateString( 'es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' } ) )
+  const [ selectedDateLimit, setSelectedDateLimit ] = useState( new Date().toLocaleDateString( 'es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' } ) )
 
   const dateSetAnterior = () => {
     setSelectedDate( () => {

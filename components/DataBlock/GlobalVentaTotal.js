@@ -5,23 +5,30 @@ import { useEffect, useState, useRef } from 'react'
 import GaugeBar from './GaugeBar'
 import axios from 'axios'
 
-const GlobalVentaTotal = ({ idUsuario, toggleSwitch, selectedDate, selectedDateLimit, title = '', helpText, icon, width = '100%', height = 'auto'}) => {
-
+const GlobalVentaTotal = ({
+  idUsuario,
+  toggleSwitch,
+  title = '',
+  helpText,
+  icon,
+  width = '100%',
+  height = 'auto',
+}) => {
   const [blockWidth, setBlockWidth] = useState(window.innerWidth)
   const viewWidth = useRef(window.innerWidth)
   const [allData, setAllData] = useState([
     {
       id_emp: 0,
-      fecha_inicial: selectedDate,
-      fecha_final: selectedDateLimit,
+      fecha_inicial: toggleSwitch.startDate,
+      fecha_final: toggleSwitch.endDate,
       nombre_emp: '',
       venta: 0,
       meta: 0,
     },
   ])
 
-  const [ startDate, setStartDate ] = useState(selectedDate)
-  const [ endDate, setEndDate ] = useState(selectedDateLimit)
+  const [startDate, setStartDate] = useState(toggleSwitch.startDate)
+  const [endDate, setEndDate] = useState(toggleSwitch.endDate)
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -43,40 +50,26 @@ const GlobalVentaTotal = ({ idUsuario, toggleSwitch, selectedDate, selectedDateL
       color: '#73b73e',
     },
   })
-/*
-  const dateSetAnterior = () => {
-    setStartDate( () => {
-      const newDate = new Date()
-      newDate.setDate( newDate.getDate() - 1 )
-      return newDate.toISOString().slice(0, 10)
-    })
-    setEndDate( () => {
-      const newDate = new Date()
-      newDate.setDate( newDate.getDate() - 1 )
-      return newDate.toISOString().slice(0, 10)
-    } )
-    setIsLoading(true)
-  }
 
-  const dateSetActual = () => {
-    setStartDate( () => {
-      const newDate = new Date()
-      return newDate.toISOString().slice(0, 10)
-    })
-    setEndDate( () => {
-      const newDate = new Date()
-      return newDate.toISOString().slice(0, 10)
-    } )
-  }*/
-
-  const fetchAll = async ( idUsuario, column, startDate, endDate ) => {
+  const fetchAll = async (idUsuario, column, startDate, endDate) => {
     try {
-      const body = { user_id: idUsuario, fecha_inicial: startDate, fecha_final: endDate, column: column }
-      const headers = { headers: { Authorization: token, Accept: 'applicaton/json' } }
-      const response = await axios.post( `${apiUrl}/user/ventatotal/`, body, headers )
+      const body = {
+        user_id: idUsuario,
+        fecha_inicial: startDate,
+        fecha_final: endDate,
+        column: column,
+      }
+      const headers = {
+        headers: { Authorization: token, Accept: 'applicaton/json' },
+      }
+      const response = await axios.post(
+        `${apiUrl}/user/ventatotal/`,
+        body,
+        headers,
+      )
       return response.data
-    } catch ( error ) {
-      console.warn( `Error al obtener datos: ${error}` )
+    } catch (error) {
+      console.warn(`Error al obtener datos: ${error}`)
       return []
     }
   }
@@ -94,62 +87,51 @@ const GlobalVentaTotal = ({ idUsuario, toggleSwitch, selectedDate, selectedDateL
     if (viewWidth.current >= 768) setBlockWidth(480)
   }, [viewWidth.current])
 
-  
-  
   /**
    * Obtain data and update state.
    */
   useEffect(async () => {
-    
-    //if ( isLoading ) {
-      //console.log(toggleSwitch)
-      //console.log(selectedDate)
-      setIsLoading(true)
-      setStartDate( selectedDate )
-      setEndDate( selectedDateLimit )
-      const empresas = await fetchAll( idUsuario, 'vta_tuno_open', selectedDate, selectedDateLimit  )
-      setAllData(empresas)
-      setIsLoading(false)
-    //}
-    
-  }, [selectedDate, selectedDateLimit] )
+    setIsLoading(true)
+    setStartDate(toggleSwitch.startDate)
+    setEndDate(toggleSwitch.endDate)
+    const empresas = await fetchAll(
+      idUsuario,
+      'vta_tuno_open',
+      toggleSwitch.startDate,
+      toggleSwitch.endDate,
+    )
+    setAllData(empresas)
+    setIsLoading(false)
+  }, [toggleSwitch])
 
   /**
    * Elements to be rendered
    */
   const renderComponent = () => {
     if (isLoading) {
-      return (
-        <View>
-          
-        </View>
-      )
+      return <View></View>
     } else {
       return (
         <View>
           {
-            allData.map( (data, index) => {
-              return (<GaugeBar
+            allData.map((data, index) => {
+              return (
+                <GaugeBar
                   key={index}
-                  idEmpresa={ data.id_emp }
-                  title={ data.nombre_emp }
-                  dataColumn={ `vta_tuno_open` }
-                  startDate={ startDate }
-                  endDate={ endDate }
+                  idEmpresa={data.id_emp}
+                  title={data.nombre_emp}
+                  dataColumn={`vta_tuno_open`}
+                  startDate={startDate}
+                  endDate={endDate}
                   height={42}
-                />)
+                />
+              )
             }) //END-MAP
           }
         </View>
       )
     }
   }
-
-  /**
-   * Update dates states on props change
-   */
-  //useEffect( dateSetAnterior, [selectedDate, selectedDateLimit] )
-  //useEffect( dateSetActual, [selectedDate, selectedDateLimit] )
 
   return (
     <View>
@@ -160,12 +142,9 @@ const GlobalVentaTotal = ({ idUsuario, toggleSwitch, selectedDate, selectedDateL
         viewStyle={styles.container}
       >
         <BlockHeader icon={icon} title={title} helpText={helpText} />
-        {
-            renderComponent()
-        }
+        {renderComponent()}
       </Shadow>
     </View>
-
   )
 }
 

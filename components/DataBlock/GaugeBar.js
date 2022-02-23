@@ -36,9 +36,7 @@ const GaugeBar = ( { idEmpresa, title, dataColumn, startDate, endDate, height } 
                 const body = { id_empresa: idEmpresa, fecha_inicial: startDate, fecha_final: endDate, column: dataColumn }
                 const headers = { headers: { Authorization: token, Accept: 'applicaton/json' } }
                 const response = await axios.post( `${apiUrl}/empresa/ventatotal/`, body, headers )
-                //console.log( response.data )
                 setEmpresa( response.data )
-                //return response.data
             } catch ( error ) {
                 console.warn( `Error al obtener datos: ${error}` )
                 return []

@@ -130,7 +130,7 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
                   dataColumn={ `vta_tuno_open` }
                   startDate={ startDate }
                   endDate={ endDate }
-                  height={48}
+                  height={42}
                 />)
             }) //END-MAP
           }
@@ -142,8 +142,8 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
   /**
    * Update dates states on props change
    */
-  useEffect( dateSetAnterior, [selectedDate, selectedDateLimit] )
-  useEffect( dateSetActual, [selectedDate, selectedDateLimit] )
+  //useEffect( dateSetAnterior, [selectedDate, selectedDateLimit] )
+  //useEffect( dateSetActual, [selectedDate, selectedDateLimit] )
 
   return (
     <View>

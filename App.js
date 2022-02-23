@@ -16,30 +16,30 @@ export default function App() {
   const [ isLoading, setIsLoading ] = useState(true)
   const [ usuario, setUsuario ] = useState()
 
-  const [ selectedDate, setSelectedDate ] = useState( new Date().toISOString().slice(0, 10) )
-  const [ selectedDateLimit, setSelectedDateLimit ] = useState( new Date().toISOString().slice(0, 10) )
+  const [ selectedDate, setSelectedDate ] = useState( new Date().toLocaleDateString() )
+  const [ selectedDateLimit, setSelectedDateLimit ] = useState( new Date().toLocaleDateString() )
 
   const dateSetAnterior = () => {
     setSelectedDate( () => {
       const newDate = new Date()
       newDate.setDate( newDate.getDate() - 1 )
-      return newDate.toISOString().slice(0, 10)
+      return newDate.toLocaleDateString()
     })
     setSelectedDateLimit( () => {
       const newDate = new Date()
       newDate.setDate( newDate.getDate() - 1 )
-      return newDate.toISOString().slice(0, 10)
+      return newDate.toLocaleDateString()
     } )
   }
 
   const dateSetActual = () => {
     setSelectedDate( () => {
       const newDate = new Date()
-      return newDate.toISOString().slice(0, 10)
+      return newDate.toLocaleDateString()
     })
     setSelectedDateLimit( () => {
       const newDate = new Date()
-      return newDate.toISOString().slice(0, 10)
+      return newDate.toLocaleDateString()
     } )
   }
 

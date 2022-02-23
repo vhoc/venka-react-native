@@ -1,30 +1,206 @@
 import { View, StyleSheet, Button } from 'react-native'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { today, currentWeekMonday, firstDayOfCurrentMonth, firstDayOfCurrentYear, yesterday, thisDayLastWeek, lastWeekMonday, firstDayOfLastMonth, thisDayLastMonth, thisDayOfLastYear, firstDayOfLastYear } from '../Helpers'
 
-const BottomBar = ( { dateSetActual, dateSetAnterior, periodDay, periodMonth, periodWeek, periodYear } ) => {
+const BottomBar = ( { setToggleSwitch, setPeriod, period, setRange, range } ) => {
 
-    const [ toggleSwitch, setToggleSwitch ] = useState({
-        range: 'day',
-        period: 'current',
-    })
+    const handleRangeSwitch = (range = 'day') => {        
+        setRange( range )
+        if ( period === 'current' ) {
+            switch ( range ) {
+                case 'day':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: today(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
 
-    const handleRangeSwitch = range => {
-        setToggleSwitch( toggleSwitch => ({
-            ...toggleSwitch,
-                range: range,
-        }))
+                case 'week':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: currentWeekMonday(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
+
+                case 'month':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: firstDayOfCurrentMonth(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
+                
+                case 'year':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: firstDayOfCurrentYear(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
+            }
+
+        } else {
+
+            switch ( range ) {
+                case 'day':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: yesterday(),
+                            endDate: yesterday(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+
+                case 'week':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: lastWeekMonday(),
+                            endDate: thisDayLastWeek(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+
+                case 'month':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: firstDayOfLastMonth(),
+                            endDate: thisDayLastMonth(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+                
+                case 'year':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: firstDayOfLastYear(),
+                            endDate: thisDayOfLastYear(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+            }
+
+        }
+
     }
-
+    /*
     const handlePeriodSwitch = period => {
+        setPeriod( period )
         setToggleSwitch( toggleSwitch => ({
             ...toggleSwitch,
+                startDate: toggleSwitch.startDate,
+                endDate: toggleSwitch.endDate,
+                range: toggleSwitch.range,
                 period: period,
         }))
     }
+    */
+    const handlePeriodSwitch = period => {
+        setPeriod( period )
+        if ( period === 'current' ) {
+            switch ( range ) {
+                case 'day':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: today(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
 
-    useEffect( () => {
-        
-    }, [toggleSwitch] )
+                case 'week':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: currentWeekMonday(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
+
+                case 'month':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: firstDayOfCurrentMonth(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
+                
+                case 'year':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: firstDayOfCurrentYear(),
+                            endDate: today(),
+                            range: range,
+                            period: period,
+                    }))
+                    break;
+            }
+
+        } else {
+
+            switch ( range ) {
+                case 'day':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: yesterday(),
+                            endDate: yesterday(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+
+                case 'week':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: lastWeekMonday(),
+                            endDate: thisDayLastWeek(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+
+                case 'month':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,
+                            startDate: firstDayOfLastMonth(),
+                            endDate: thisDayLastMonth(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+                
+                case 'year':
+                    setToggleSwitch( toggleSwitch => ({
+                        ...toggleSwitch,                            
+                            startDate: firstDayOfLastYear(),
+                            endDate: thisDayOfLastYear(),
+                            range: range,
+                            period: 'last',
+                    }))
+                    break;
+            }
+
+        }
+    }
+
+    //useEffect( parentState, [toggleSwitch] )
 
     return (
         <View style={ styles.container }>

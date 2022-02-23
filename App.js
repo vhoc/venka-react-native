@@ -20,31 +20,14 @@ export default function App() {
   const [ selectedDate, setSelectedDate ] = useState( venkaFormat( new Date() ) )
   const [ selectedDateLimit, setSelectedDateLimit ] = useState( venkaFormat( new Date() ) )
 
-  // Periodo Botón: ANTERIOR
-  const dateSetAnterior = () => {
-    setSelectedDate( () => {
-      const newDate = new Date()
-      newDate.setDate( newDate.getDate() - 1 )
-      return venkaFormat( newDate )
-    })
-    setSelectedDateLimit( () => {
-      const newDate = new Date()
-      newDate.setDate( newDate.getDate() - 1 )
-      return venkaFormat( newDate )
-    } )
-  }
-
-  // Periodo Botón: ACTUAL
-  const dateSetActual = () => {
-    setSelectedDate( () => {
-      const newDate = new Date()
-      return venkaFormat( newDate )
-    })
-    setSelectedDateLimit( () => {
-      const newDate = new Date()
-      return venkaFormat( newDate )
-    } )
-  }
+  const [ toggleSwitch, setToggleSwitch ] = useState({
+      startDate: venkaFormat( new Date() ),
+      endDate: venkaFormat( new Date() ),
+      range: 'day',
+      period: 'current',
+  })
+  const [ period, setPeriod ] = useState( 'current' )
+  const [ range, setRange ] = useState( 'day' )
 
   const apiUrl = 'https://venka.app/api'
 
@@ -84,7 +67,7 @@ export default function App() {
             
             <View style={ styles.main }>
               <Text style={ styles.currentDate }>{ selectedDate }</Text>
-              <GlobalVentaTotal idUsuario={usuario.id} selectedDate={ selectedDate } selectedDateLimit={ selectedDateLimit } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>            
+              <GlobalVentaTotal idUsuario={usuario.id} toggleSwitch={ toggleSwitch } period={ period } range={ range } selectedDate={ selectedDate } selectedDateLimit={ selectedDateLimit } title='venta total' helpText={`Texto de ayuda de venta total`} icon='money-bill' width='100%'/>            
             </View>
             
           )
@@ -94,7 +77,7 @@ export default function App() {
         
       </MainView>
 
-      <BottomBar dateSetActual={ dateSetActual } dateSetAnterior={ dateSetAnterior }/>
+      <BottomBar setToggleSwitch={ setToggleSwitch } setPeriod={ setPeriod } period={ period } setRange={setRange} range={ range } />
 
       <StatusBar style="auto" />
 

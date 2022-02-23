@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 import GaugeBar from './GaugeBar'
 import axios from 'axios'
 
-const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = '', helpText, icon, width = '100%', height = 'auto'}) => {
+const GlobalVentaTotal = ({ idUsuario, toggleSwitch, selectedDate, selectedDateLimit, title = '', helpText, icon, width = '100%', height = 'auto'}) => {
 
   const [blockWidth, setBlockWidth] = useState(window.innerWidth)
   const viewWidth = useRef(window.innerWidth)
@@ -102,7 +102,7 @@ const GlobalVentaTotal = ({ idUsuario, selectedDate, selectedDateLimit, title = 
   useEffect(async () => {
     
     //if ( isLoading ) {
-      console.log("main useEffect re-run")
+      //console.log(toggleSwitch)
       //console.log(selectedDate)
       setIsLoading(true)
       setStartDate( selectedDate )

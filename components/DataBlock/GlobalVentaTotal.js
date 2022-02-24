@@ -52,6 +52,7 @@ const GlobalVentaTotal = ({
   })
 
   const fetchAll = async (idUsuario, column, startDate, endDate) => {
+    console.log( `fetchAll: ${column}` )
     try {
       const body = {
         user_id: idUsuario,
@@ -94,12 +95,33 @@ const GlobalVentaTotal = ({
     setIsLoading(true)
     setStartDate(toggleSwitch.startDate)
     setEndDate(toggleSwitch.endDate)
+
+    let column = ''
+    switch ( toggleSwitch.range ) {
+      case 'day':
+        toggleSwitch.period === 'current' ? column = 'vta_tuno_open' : column = 'vta_dia_1'
+        break;
+      
+      case 'week':
+        toggleSwitch.period === 'current' ? column = 'vta_sem_0' : column = 'vta_sem_1'
+        break;
+
+      case 'month':
+        toggleSwitch.period === 'current' ? column = 'vta_mes_0' : column = 'vta_mes_1'
+        break;
+
+      case 'year':
+        toggleSwitch.period === 'current' ? column = 'vta_anio_0' : column = 'vta_anio_1'
+        break;
+    }
+    console.log(`useEffect: ${column}`)
     const empresas = await fetchAll(
       idUsuario,
-      'vta_tuno_open',
+      column,
       toggleSwitch.startDate,
       toggleSwitch.endDate,
     )
+
     setAllData(empresas)
     setIsLoading(false)
   }, [toggleSwitch])

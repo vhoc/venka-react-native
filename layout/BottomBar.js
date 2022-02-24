@@ -96,18 +96,7 @@ const BottomBar = ( { setToggleSwitch, setPeriod, period, setRange, range } ) =>
         }
 
     }
-    /*
-    const handlePeriodSwitch = period => {
-        setPeriod( period )
-        setToggleSwitch( toggleSwitch => ({
-            ...toggleSwitch,
-                startDate: toggleSwitch.startDate,
-                endDate: toggleSwitch.endDate,
-                range: toggleSwitch.range,
-                period: period,
-        }))
-    }
-    */
+    
     const handlePeriodSwitch = period => {
         setPeriod( period )
         if ( period === 'current' ) {

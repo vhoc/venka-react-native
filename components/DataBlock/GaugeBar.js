@@ -9,48 +9,24 @@ import {
     RobotoCondensed_700Bold_Italic,
   } from '@expo-google-fonts/roboto-condensed'
 
-const GaugeBar = ( { idEmpresa, title, dataColumn, startDate, endDate, height } ) => {
+const GaugeBar = ( { title, currentValue, limitValue, height } ) => {
 
-    const [ empresa, setEmpresa ] = useState({
-        fecha_inicial: startDate,
-        fecha_final: endDate,
-        id_emp: 0,
-        venta: 0,
-        meta: 0,
-    })
+    const [ curValue, setCurValue] = useState( currentValue )
+    const [ limValue, setLimValue] = useState( limitValue )
+
     const [ progress, setProgress ] = useState(0.0)
-
-    const apiUrl = 'https://venka.app/api'
-    const token = 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid'
     
     let [ fontsLoaded ] = useFonts({
         RobotoCondensed_400Regular,
         RobotoCondensed_300Light_Italic,
         RobotoCondensed_700Bold_Italic
-    })    
-
-    useEffect( () => {
-
-        const fetchData = async () => {
-            try {
-                const body = { id_empresa: idEmpresa, fecha_inicial: startDate, fecha_final: endDate, column: dataColumn }
-                const headers = { headers: { Authorization: token, Accept: 'applicaton/json' } }
-                const response = await axios.post( `${apiUrl}/empresa/ventatotal/`, body, headers )
-                setEmpresa( response.data )
-            } catch ( error ) {
-                console.warn( `Error al obtener datos: ${error}` )
-                return []
-            }
-        }
-
-        fetchData()
-    }, [] )
+    })
     
     useEffect( () => {
-        if ( empresa.venta && empresa.meta ) {
-            setProgress( empresa.venta / empresa.meta );
+        if ( curValue && limValue ) {
+            setProgress( curValue / limValue );
         }
-    }, [empresa] )
+    }, [] )
 
     return (
 
@@ -75,10 +51,10 @@ const GaugeBar = ( { idEmpresa, title, dataColumn, startDate, endDate, height } 
                     />
 
                     <View style={ styles.barCaptionsContainer }>
-                        <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(empresa.venta).toLocaleString() }`}</Text>
+                        <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(curValue).toLocaleString() }`}</Text>
                         {
-                            empresa.meta || empresa.meta > 0 ?
-                                <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(empresa.meta).toLocaleString() }`}</Text>
+                            limValue || limValue > 0 ?
+                                <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(limValue).toLocaleString() }`}</Text>
                                 :
                                 <Text style={ styles.barCaption }>Meta no asignada</Text>
                         }
@@ -88,7 +64,7 @@ const GaugeBar = ( { idEmpresa, title, dataColumn, startDate, endDate, height } 
                 </View>                
 
                 {
-                    empresa.meta || empresa.meta > 0 ?
+                    limValue || limValue > 0 ?
                         <Text style={ styles.percent }>{ Math.round(progress * 100) }%</Text>
                         :
                         <></>

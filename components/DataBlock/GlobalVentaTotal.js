@@ -15,61 +15,11 @@ const GlobalVentaTotal = ({
   width = '100%',
   height = 'auto',
 }) => {
-  const [blockWidth, setBlockWidth] = useState(window.innerWidth)
+  const [ blockWidth, setBlockWidth ] = useState(window.innerWidth)
+  const [ lastUpdate, setLastUpdate ] = useState(Date.now())
   const viewWidth = useRef(window.innerWidth)
   const [allData, setAllData] = useState([
-    {
-      fecha_inicial: toggleSwitch.startDate,
-      fecha_final: toggleSwitch.endDate,
-      id_emp: 0,
-      nombre_emp: '',
-      ventas: {
-        vta_tuno_open: '0',
-        vta_dia_1: '0',
-        vta_sem_0: '0',
-        vta_sem_1: '0',
-        vta_mes_0: '0',
-        vta_mes_1: '0',
-        vta_anio_0: '0',
-      },
-      metas: {
-        dia: '0',
-        semana: '0',
-        mes: '0',
-        año: '0',
-        dia_anterior: '0',
-        semana_anterior: '0',
-        mes_anterior: '0',
-        año_anterior: '0',
-      },
-    },
-  ])
-  const [storedData, setStoredData] = useState([
-    {
-      fecha_inicial: toggleSwitch.startDate,
-      fecha_final: toggleSwitch.endDate,
-      id_emp: 0,
-      nombre_emp: '',
-      ventas: {
-        vta_tuno_open: '0',
-        vta_dia_1: '0',
-        vta_sem_0: '0',
-        vta_sem_1: '0',
-        vta_mes_0: '0',
-        vta_mes_1: '0',
-        vta_anio_0: '0',
-      },
-      metas: {
-        dia: '0',
-        semana: '0',
-        mes: '0',
-        año: '0',
-        dia_anterior: '0',
-        semana_anterior: '0',
-        mes_anterior: '0',
-        año_anterior: '0',
-      },
-    },
+   
   ])
 
   let styles = StyleSheet.create({
@@ -101,7 +51,7 @@ const GlobalVentaTotal = ({
     try {
       const jsonValue = JSON.stringify(value)
       await AsyncStorage.setItem('data', jsonValue)
-      setAllData( value )
+      //setAllData( value )
     } catch ( error ) {
       console.warn( error )
     }
@@ -111,20 +61,24 @@ const GlobalVentaTotal = ({
   const getData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('data')
-      return jsonValue != null ? JSON.parse(jsonValue) : null
+      if ( jsonValue !== null ) {
+        setAllData( JSON.parse(jsonValue) )
+        setLastUpdate( Date.now() )
+      }
+      //return jsonValue != null ? JSON.parse(jsonValue) : null
     } catch ( error ) {
       console.warn( error )
     }
   }
 
-  const fetchAll = async (idUsuario, column, startDate, endDate) => {
-    console.log( `fetchAll: ${column}` )
+  const fetchAll = async (idUsuario, startDate, endDate) => {
+    //console.log( `fetchAll: ${column}` )
     try {
       const body = {
         user_id: idUsuario,
         fecha_inicial: startDate,
         fecha_final: endDate,
-        column: column,
+        //column: column,
       }
       const headers = {
         headers: { Authorization: token, Accept: 'applicaton/json' },
@@ -134,8 +88,11 @@ const GlobalVentaTotal = ({
         body,
         headers,
       )
+      storeData( response.data )
+      setAllData( response.data )
+      //setLastUpdate( Date.now() )
       //storeData( response.data )
-      return response.data
+      //return response.data
     } catch (error) {
       console.warn(`Error al obtener datos: ${error}`)
       return []
@@ -146,7 +103,7 @@ const GlobalVentaTotal = ({
    * #1 useEffect()
    * Fetch data from the API into AsyncStorage
    * On first render
-   */
+   *//*
   useEffect( async () => {
     const empresas = await fetchAll(
       idUsuario,
@@ -155,9 +112,11 @@ const GlobalVentaTotal = ({
     )
 
     storeData( empresas )
-    setStoredData( empresas )
+    getData()
+    //setStoredData( empresas )
 
     // Refresh every x seconds
+    /*
     const interval = setInterval( async () => {
       const empresas = await fetchAll(
         idUsuario,
@@ -170,7 +129,34 @@ const GlobalVentaTotal = ({
       setStoredData( await getData() )
     }, 30000 )
 
-    return () => clearInterval(interval)
+    return () => clearInterval(interval)*/
+ /* }, [] )*/
+
+  // Update data in AsyncStorage from API every x seconds
+  useEffect( () => {
+    setIsLoading( true )
+    const data = fetchAll( idUsuario, toggleSwitch.startDate, toggleSwitch.endDate, )
+    //setAllData( data )
+    setIsLoading( false )
+
+    const interval = setInterval( () => {
+      //setIsLoading( true )
+      fetchAll( idUsuario, toggleSwitch.startDate, toggleSwitch.endDate, )
+      //setIsLoading( false )
+    }, 60000 )
+
+    return () => clearInterval( interval )  
+      
+  }, [] )
+
+  useEffect( async () => {
+    const interval2 = setInterval( () => {
+      setAllData( getData() )
+      setIsLoading(false)
+    }, 120000 )
+
+    return () => clearInterval( interval2 )
+    
   }, [] )
 
   /**
@@ -189,6 +175,7 @@ const GlobalVentaTotal = ({
   /**
    * Obtain data and update state.
    */
+  /*
   useEffect(async () => {
     setIsLoading(true)
     setStartDate(toggleSwitch.startDate)
@@ -223,18 +210,20 @@ const GlobalVentaTotal = ({
     setAllData(empresas)
     setIsLoading(false)
   }, [toggleSwitch])
+  */
 
   /**
    * Elements to be rendered
    */
   const renderComponent = () => {
-    if (isLoading) {
+    //console.log(allData)
+    if (isLoading || !allData.length) {
       return <View></View>
     } else {
       return (
         <View>
           {
-            storedData.map((data, index) => {
+            allData.map((data, index) => {
               return (
                 <GaugeBar
                   key={index}

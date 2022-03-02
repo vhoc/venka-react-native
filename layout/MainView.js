@@ -28,6 +28,6 @@ const styles = StyleSheet.create({
         paddingBottom: '125px',
         width: '100%',
         padding: '1rem',
-        gap: '1rem',
+        margin: '1rem',
     }
 })

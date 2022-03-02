@@ -40,7 +40,6 @@ const GaugeBar = ( { title, currentValue, limitValue, height } ) => {
 
                 <View style={ styles.barContainer }>
                     <Progress.Bar
-                        animated
                         progress={progress}
                         width={null}
                         height={height}

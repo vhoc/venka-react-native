@@ -11,8 +11,8 @@ import {
 
 const GaugeBar = ( { title, currentValue, limitValue, height } ) => {
 
-    const [ curValue, setCurValue] = useState( currentValue )
-    const [ limValue, setLimValue] = useState( limitValue )
+    const [ curValue, setCurValue] = useState( currentValue.replace(/,/g, '.') )
+    const [ limValue, setLimValue] = useState( limitValue.replace(/,/g, '.') )
 
     const [ progress, setProgress ] = useState(0.0)
     

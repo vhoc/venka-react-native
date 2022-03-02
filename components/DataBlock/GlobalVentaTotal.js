@@ -15,18 +15,15 @@ const GlobalVentaTotal = ({
   width = '100%',
   height = 'auto',
 }) => {
+
   const [ blockWidth, setBlockWidth ] = useState(window.innerWidth)
-  const [ lastUpdate, setLastUpdate ] = useState(Date.now())
   const viewWidth = useRef(window.innerWidth)
-  const [allData, setAllData] = useState([
-   
-  ])
+  const [allData, setAllData] = useState([])
 
   let styles = StyleSheet.create({
     container: {
       width: width,
       minWidth: blockWidth,
-      //maxWidth: '450px',
       height: height,
       padding: '0.7rem',
       paddingTop: '0.3rem',
@@ -38,9 +35,8 @@ const GlobalVentaTotal = ({
     },
   })
 
-  const [startDate, setStartDate] = useState(toggleSwitch.startDate)
-  const [endDate, setEndDate] = useState(toggleSwitch.endDate)
-
+  const [ ventaPropertyName, setVentaPropertyName ] = useState( 'vta_tuno_open' )
+  const [ metaPropertyName, setMetaPropertyName ] = useState( 'dia' )
   const [isLoading, setIsLoading] = useState(true)
 
   const apiUrl = 'https://venka.app/api'
@@ -51,7 +47,6 @@ const GlobalVentaTotal = ({
     try {
       const jsonValue = JSON.stringify(value)
       await AsyncStorage.setItem('data', jsonValue)
-      //setAllData( value )
     } catch ( error ) {
       console.warn( error )
     }
@@ -63,22 +58,18 @@ const GlobalVentaTotal = ({
       const jsonValue = await AsyncStorage.getItem('data')
       if ( jsonValue !== null ) {
         setAllData( JSON.parse(jsonValue) )
-        setLastUpdate( Date.now() )
       }
-      //return jsonValue != null ? JSON.parse(jsonValue) : null
     } catch ( error ) {
       console.warn( error )
     }
   }
 
   const fetchAll = async (idUsuario, startDate, endDate) => {
-    //console.log( `fetchAll: ${column}` )
     try {
       const body = {
         user_id: idUsuario,
         fecha_inicial: startDate,
         fecha_final: endDate,
-        //column: column,
       }
       const headers = {
         headers: { Authorization: token, Accept: 'applicaton/json' },
@@ -90,59 +81,20 @@ const GlobalVentaTotal = ({
       )
       storeData( response.data )
       setAllData( response.data )
-      //setLastUpdate( Date.now() )
-      //storeData( response.data )
-      //return response.data
     } catch (error) {
       console.warn(`Error al obtener datos: ${error}`)
       return []
     }
   }
 
-  /**
-   * #1 useEffect()
-   * Fetch data from the API into AsyncStorage
-   * On first render
-   *//*
-  useEffect( async () => {
-    const empresas = await fetchAll(
-      idUsuario,
-      toggleSwitch.startDate,
-      toggleSwitch.endDate,
-    )
-
-    storeData( empresas )
-    getData()
-    //setStoredData( empresas )
-
-    // Refresh every x seconds
-    /*
-    const interval = setInterval( async () => {
-      const empresas = await fetchAll(
-        idUsuario,
-        toggleSwitch.startDate,
-        toggleSwitch.endDate,
-      )
-  
-      storeData( empresas )
-      setAllData(empresas)
-      setStoredData( await getData() )
-    }, 30000 )
-
-    return () => clearInterval(interval)*/
- /* }, [] )*/
-
   // Update data in AsyncStorage from API every x seconds
   useEffect( () => {
     setIsLoading( true )
-    const data = fetchAll( idUsuario, toggleSwitch.startDate, toggleSwitch.endDate, )
-    //setAllData( data )
+    fetchAll( idUsuario, toggleSwitch.startDate, toggleSwitch.endDate, )
     setIsLoading( false )
 
     const interval = setInterval( () => {
-      //setIsLoading( true )
       fetchAll( idUsuario, toggleSwitch.startDate, toggleSwitch.endDate, )
-      //setIsLoading( false )
     }, 60000 )
 
     return () => clearInterval( interval )  
@@ -158,6 +110,11 @@ const GlobalVentaTotal = ({
     return () => clearInterval( interval2 )
     
   }, [] )
+
+  // Toggle Switch
+  useEffect( async () => {
+    setAllData( getData() )
+  }, [toggleSwitch] )
 
   /**
    * Screen Adaptiveness
@@ -175,48 +132,64 @@ const GlobalVentaTotal = ({
   /**
    * Obtain data and update state.
    */
-  /*
+  
   useEffect(async () => {
-    setIsLoading(true)
-    setStartDate(toggleSwitch.startDate)
-    setEndDate(toggleSwitch.endDate)
+    let ventaProperty = 'vta_tuno_open'
+    let metaProperty = 'dia'
 
-    let column = ''
     switch ( toggleSwitch.range ) {
       case 'day':
-        toggleSwitch.period === 'current' ? column = 'vta_tuno_open' : column = 'vta_dia_1'
+        if ( toggleSwitch.period === 'current' ) {
+          ventaProperty = 'vta_tuno_open'
+          metaProperty = 'dia'
+        } else {
+          ventaProperty = 'vta_dia_1'
+          metaProperty = 'dia'
+        }
         break;
       
       case 'week':
-        toggleSwitch.period === 'current' ? column = 'vta_sem_0' : column = 'vta_sem_1'
+        if ( toggleSwitch.period === 'current' ){
+          ventaProperty = 'vta_sem_0'
+          metaProperty = 'semana'
+        } else {
+          ventaProperty = 'vta_sem_1'
+          metaProperty = 'semana'
+        } 
         break;
 
       case 'month':
-        toggleSwitch.period === 'current' ? column = 'vta_mes_0' : column = 'vta_mes_1'
+        if ( toggleSwitch.period === 'current' ) {
+          ventaProperty = 'vta_mes_0'
+          metaProperty = 'mes'
+        } else {
+          ventaProperty = 'vta_mes_1'
+          metaProperty = 'mes'
+        }
         break;
 
       case 'year':
-        toggleSwitch.period === 'current' ? column = 'vta_anio_0' : column = 'vta_anio_1'
+        if ( toggleSwitch.period === 'current' ) {
+          ventaProperty = 'vta_anio_0'
+          metaProperty = 'año'
+        } else {
+          ventaProperty = 'vta_anio_1'
+          metaProperty = 'año'
+        }
         break;
     }
-    console.log(`useEffect: ${column}`)
-    const empresas = await fetchAll(
-      idUsuario,
-      column,
-      toggleSwitch.startDate,
-      toggleSwitch.endDate,
-    )
 
-    setAllData(empresas)
-    setIsLoading(false)
+    setVentaPropertyName( ventaProperty )
+    setMetaPropertyName( metaProperty )
   }, [toggleSwitch])
-  */
+  
 
   /**
    * Elements to be rendered
    */
   const renderComponent = () => {
     //console.log(allData)
+    
     if (isLoading || !allData.length) {
       return <View></View>
     } else {
@@ -229,8 +202,8 @@ const GlobalVentaTotal = ({
                   key={index}
                   idEmpresa={data.id_emp}
                   title={data.nombre_emp}
-                  currentValue={data.ventas.vta_tuno_open.replace(/,/g, '.')}
-                  limitValue={data.metas.dia.replace(/,/g, '.')}
+                  currentValue={data.ventas[ventaPropertyName]}
+                  limitValue={data.metas[metaPropertyName]}
                   height={42}
                 />
               )

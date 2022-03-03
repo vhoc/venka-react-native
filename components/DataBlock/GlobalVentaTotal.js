@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 import GaugeBar from './GaugeBar'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import useLocalStorage from '../../hooks/useLocalStorage'
 
 const GlobalVentaTotal = ({
   idUsuario,
@@ -37,27 +38,18 @@ const GlobalVentaTotal = ({
 
   const [ ventaPropertyName, setVentaPropertyName ] = useState( 'vta_tuno_open' )
   const [ metaPropertyName, setMetaPropertyName ] = useState( 'dia' )
-  const [isLoading, setIsLoading] = useState(true)
+  const [ storedData, setStoredData ] = useLocalStorage( 'data' )
+  const [ isLoading, setIsLoading ] = useState(true)
 
   const apiUrl = 'https://venka.app/api'
   const token = 'Bearer 5|rWPvximC35rCs3UYTvadmJkI9Mz7S1spRgqyDFid'
 
-  // Stores data into "Local Storage"
-  const storeData = async value => {
-    try {
-      const jsonValue = JSON.stringify(value)
-      await AsyncStorage.setItem('data', jsonValue)
-    } catch ( error ) {
-      console.warn( error )
-    }
-  }
-
-  // Reads data from "Local Storage"
-  const getData = async () => {
+  const getStoredData = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('data')
       if ( jsonValue !== null ) {
         setAllData( JSON.parse(jsonValue) )
+        return JSON.parse(jsonValue)
       }
     } catch ( error ) {
       console.warn( error )
@@ -79,7 +71,7 @@ const GlobalVentaTotal = ({
         body,
         headers,
       )
-      storeData( response.data )
+      setStoredData( response.data )
       setAllData( response.data )
     } catch (error) {
       console.warn(`Error al obtener datos: ${error}`)
@@ -101,9 +93,10 @@ const GlobalVentaTotal = ({
       
   }, [] )
 
+  // Update data in allData state from the AsyncStorage every x seconds
   useEffect( async () => {
     const interval2 = setInterval( () => {
-      setAllData( getData() )
+      setAllData( storedData )
       setIsLoading(false)
     }, 120000 )
 
@@ -111,9 +104,9 @@ const GlobalVentaTotal = ({
     
   }, [] )
 
-  // Toggle Switch
-  useEffect( async () => {
-    setAllData( getData() )
+  // Toggle Switch trigger
+  useEffect( () => {
+    setAllData( getStoredData() )
   }, [toggleSwitch] )
 
   /**
@@ -130,9 +123,8 @@ const GlobalVentaTotal = ({
   }, [viewWidth.current])
 
   /**
-   * Obtain data and update state.
-   */
-  
+   * Toggle Switch Controller
+   */  
   useEffect(async () => {
     let ventaProperty = 'vta_tuno_open'
     let metaProperty = 'dia'
@@ -144,7 +136,7 @@ const GlobalVentaTotal = ({
           metaProperty = 'dia'
         } else {
           ventaProperty = 'vta_dia_1'
-          metaProperty = 'dia'
+          metaProperty = 'dia_anterior'
         }
         break;
       
@@ -154,7 +146,7 @@ const GlobalVentaTotal = ({
           metaProperty = 'semana'
         } else {
           ventaProperty = 'vta_sem_1'
-          metaProperty = 'semana'
+          metaProperty = 'semana_anterior'
         } 
         break;
 
@@ -164,7 +156,7 @@ const GlobalVentaTotal = ({
           metaProperty = 'mes'
         } else {
           ventaProperty = 'vta_mes_1'
-          metaProperty = 'mes'
+          metaProperty = 'mes_anterior'
         }
         break;
 
@@ -174,7 +166,7 @@ const GlobalVentaTotal = ({
           metaProperty = 'año'
         } else {
           ventaProperty = 'vta_anio_1'
-          metaProperty = 'año'
+          metaProperty = 'año_anterior'
         }
         break;
     }
@@ -187,9 +179,7 @@ const GlobalVentaTotal = ({
   /**
    * Elements to be rendered
    */
-  const renderComponent = () => {
-    //console.log(allData)
-    
+  const renderComponent = () => {    
     if (isLoading || !allData.length) {
       return <View></View>
     } else {

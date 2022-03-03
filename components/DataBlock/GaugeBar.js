@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { StyleSheet, View, Text } from "react-native"
-import axios from 'axios'
 import * as Progress from 'react-native-progress'
 import {
     useFonts,
@@ -11,8 +10,8 @@ import {
 
 const GaugeBar = ( { title, currentValue, limitValue, height } ) => {
 
-    const [ curValue, setCurValue] = useState( currentValue.replace(/,/g, '.') )
-    const [ limValue, setLimValue] = useState( limitValue.replace(/,/g, '.') )
+    const [ curValue, setCurValue] = useState( currentValue ? currentValue.replace(/,/g, '.') : '0' )
+    const [ limValue, setLimValue] = useState( limitValue ? limitValue.replace(/,/g, '.') : '0' )
 
     const [ progress, setProgress ] = useState(0.0)
     
@@ -45,17 +44,17 @@ const GaugeBar = ( { title, currentValue, limitValue, height } ) => {
                         height={height}
                         borderRadius={25}
                         borderWidth={0}
-                        color={`#73b73e`}
+                        color={ limitValue == 0 ? `#535353` : `#73b73e` }
                         unfilledColor={'#535353'}
                     />
 
                     <View style={ styles.barCaptionsContainer }>
                         <Text style={ [styles.barCaption, styles.barCaptionCurrent] }>{`$${ Math.round(curValue).toLocaleString() }`}</Text>
                         {
-                            limValue || limValue > 0 ?
+                            limValue !== '0' ?
                                 <Text style={ [styles.barCaption, styles.barCaptionLimit] }>{`Meta: $${ Math.round(limValue).toLocaleString() }`}</Text>
                                 :
-                                <Text style={ styles.barCaption }>Meta no asignada</Text>
+                                <Text style={ styles.barCaption }>No hay registro de metas</Text>
                         }
                         
                     </View>
@@ -63,7 +62,7 @@ const GaugeBar = ( { title, currentValue, limitValue, height } ) => {
                 </View>                
 
                 {
-                    limValue || limValue > 0 ?
+                    limValue !== '0' ?
                         <Text style={ styles.percent }>{ Math.round(progress * 100) }%</Text>
                         :
                         <></>

@@ -1,16 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useState, useEffect } from 'react'
 
-// Stores data into "Local Storage"
-const storeData = async value => {
-    try {
-        const jsonValue = JSON.stringify(value)
-        await AsyncStorage.setItem('data', jsonValue)
-    } catch ( error ) {
-        console.warn( error )
-    }
-}
-
 // Reads data from "Local Storage"
 const getData = async ( key, initialValue ) => {
     try {
@@ -31,7 +21,7 @@ const useLocalStorage = ( key, initialValue ) => {
         return getData( key, initialValue )
     } )
 
-    useEffect( () => {
+    useEffect( async () => {
         try {
             //const jsonValue = JSON.stringify(value)
             await AsyncStorage.setItem( key, JSON.stringify(value) )

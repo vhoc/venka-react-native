@@ -1,7 +1,8 @@
-import { StyleSheet, View, Text, Button } from 'react-native'
+import { StyleSheet, View, Text, Button, Dimensions } from 'react-native'
 import BlockHeader from './BlockHeader'
 import { Shadow } from 'react-native-shadow-2'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useLayoutEffect } from 'react'
+import useWindowSize from '../../hooks/useWindowSize'
 import GaugeBar from './GaugeBar'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -18,18 +19,21 @@ const GlobalVentaTotal = ({
 }) => {
 
   const [ blockWidth, setBlockWidth ] = useState(window.innerWidth)
-  const viewWidth = useRef(window.innerWidth)
+  //const viewWidth = useRef(window.innerWidth)
   const [allData, setAllData] = useState([])
+  const [ wWidth, wHeight ] = useWindowSize()
 
   let styles = StyleSheet.create({
     container: {
       width: width,
       minWidth: blockWidth,
       height: height,
-      padding: '0.7rem',
-      paddingTop: '0.3rem',
-      border: '1px solid #eeeeee',
-      borderRadius: '0.6rem',
+      padding: 8,
+      paddingTop: 4,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: '#eeeeee',
+      borderRadius: 12,
     },
     loadingText: {
       color: '#73b73e',
@@ -113,14 +117,10 @@ const GlobalVentaTotal = ({
    * Screen Adaptiveness
    */
   useEffect(() => {
-    const handleResize = () => {
-      viewWidth.current = window.innerWidth
-    }
-    window.addEventListener('resize', handleResize)
-    if (viewWidth.current >= 0 && viewWidth.current <= 479) setBlockWidth(320)
-    if (viewWidth.current >= 480 && viewWidth.current <= 767) setBlockWidth(480)
-    if (viewWidth.current >= 768) setBlockWidth(480)
-  }, [viewWidth.current])
+    if (wWidth >= 0 && wWidth <= 479) setBlockWidth(320)
+    if (wWidth >= 480 && wWidth <= 767) setBlockWidth(480)
+    if (wWidth >= 768) setBlockWidth(480)
+  }, [wWidth])
 
   /**
    * Toggle Switch Controller

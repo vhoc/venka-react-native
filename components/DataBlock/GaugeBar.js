@@ -81,7 +81,7 @@ export default GaugeBar
 const styles = StyleSheet.create( {
     container: {
         display: 'flex',
-        alignItems: 'space-between',
+        alignItems: 'stretch',
         width: '100%',
         marginTop: '0.25rem',
         marginBottom: '0.25rem',
@@ -93,7 +93,7 @@ const styles = StyleSheet.create( {
     },
     titleText: {
         textTransform: 'capitalize',
-        fontSize: '1.0em',
+        fontSize: 16,
         fontWeight: '400',
         fontFamily: 'RobotoCondensed_400Regular',
     },
@@ -121,18 +121,18 @@ const styles = StyleSheet.create( {
         color: '#ffffff',
     },
     barCaptionCurrent: {
-        fontSize: '1.618em',
+        fontSize: 26,
     },
     barCaptionLimit: {
-        fontSize: '1em',
+        fontSize: 16,
         fontFamily: 'RobotoCondensed_300Light_Italic'
     },
     percent: {
         fontFamily: 'RobotoCondensed_300Light_Italic,',
         fontStyle: 'italic',
-        fontSize: '1.5em',
+        fontSize: 24,
         color: '#535353',
         textAlign: 'right',
-        marginLeft: '0.5rem',
+        marginLeft: 8,
     },
 } )

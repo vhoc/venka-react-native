@@ -1,9 +1,45 @@
 import { View, StyleSheet, Button } from 'react-native'
-import { useState } from 'react'
-import { today, currentWeekMonday, firstDayOfCurrentMonth, firstDayOfCurrentYear, yesterday, thisDayLastWeek, lastWeekMonday, firstDayOfLastMonth, thisDayLastMonth, thisDayOfLastYear, firstDayOfLastYear } from '../Helpers'
+import useWindowSize from '../hooks/useWindowSize'
+import { today,
+    currentWeekMonday,
+    firstDayOfCurrentMonth,
+    firstDayOfCurrentYear,
+    yesterday,
+    thisDayLastWeek,
+    lastWeekMonday,
+    firstDayOfLastMonth,
+    thisDayLastMonth,
+    thisDayOfLastYear,
+    firstDayOfLastYear
+} from '../Helpers'
 
 const BottomBar = ( { setToggleSwitch, setPeriod, period, setRange, range } ) => {
-
+    const [windowWidth, windowHeight] = useWindowSize()
+    const styles = StyleSheet.create({
+        container: {
+            width: windowWidth,
+            minWidth: 320,
+            height: 115,
+            display: 'flex',
+            backgroundColor: '#73b73e',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 32,
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 9999,
+        },
+        topRow: {
+            display: 'flex',
+            flexDirection: 'row',
+        },
+        bottomRow: {
+            display: 'flex',
+            flexDirection: 'row'
+        }
+    })
     const handleRangeSwitch = (range = 'day') => {        
         setRange( range )
         if ( period === 'current' ) {
@@ -214,26 +250,3 @@ const BottomBar = ( { setToggleSwitch, setPeriod, period, setRange, range } ) =>
 
 export default BottomBar
 
-const styles = StyleSheet.create({
-    container: {
-        width: '100vw',
-        minWidth: '320px',
-        height: '115px',
-        display: 'flex',
-        backgroundColor: '#73b73e',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '2rem',
-        position: 'fixed',
-        bottom: '0px',
-        zIndex: 9999,
-    },
-    topRow: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    bottomRow: {
-        display: 'flex',
-        flexDirection: 'row'
-    }
-})

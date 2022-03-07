@@ -1,14 +1,16 @@
 import React from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View, ScrollView, SafeAreaView, Text, Dimensions } from 'react-native'
 import GlobalVentaTotal from './components/DataBlock/GlobalVentaTotal'
 import BottomBar from './layout/BottomBar'
-import MainView from './layout/MainView'
+//import MainView from './layout/MainView'
 import TopBar from './layout/TopBar'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import * as Progress from 'react-native-progress'
 import { venkaFormat } from './Helpers'
+
+const screenHeight = Dimensions.get( 'window' ).height
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true)
@@ -54,10 +56,13 @@ export default function App() {
   }, [selectedDate, selectedDateLimit])
 
   return (
-    <View style={styles.container}>
-      <TopBar />
+    <SafeAreaView>
 
-      <MainView>
+    <View style={styles.container}>
+      
+      
+      <ScrollView style={ styles.scrollView } stickyHeaderIndices={ [0] } showsVerticalScrollIndicator={ false } >
+        <TopBar />
         {
           (!isLoading,
           !usuario ? (
@@ -87,7 +92,9 @@ export default function App() {
             </View>
           ))
         }
-      </MainView>
+          
+      </ScrollView>
+      
 
       <BottomBar
         setToggleSwitch={setToggleSwitch}
@@ -95,22 +102,27 @@ export default function App() {
         period={period}
         setRange={setRange}
         range={range}
-      />
+      />    
 
       <StatusBar style="auto" />
     </View>
+    
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minWidth: '320px',
+    maxHeight: screenHeight,
+    minWidth: 320,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
   main: {
+    marginTop: 100,
+    marginBottom: 150,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

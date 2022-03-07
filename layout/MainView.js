@@ -24,10 +24,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        top: '90px',
-        paddingBottom: '125px',
+        top: 90,
+        paddingBottom: 125,
         width: '100%',
-        padding: '1rem',
-        margin: '1rem',
+        padding: 16,
+        margin: 16,
     }
 })

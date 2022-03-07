@@ -1,6 +1,6 @@
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import VenkaImagotipo from '../assets/Icons/venka-imagotipo.svg'
+//import VenkaImagotipo from '../assets/Icons/venka-imagotipo.svg'
 
 const TopBar = () => {
 
@@ -19,7 +19,7 @@ const TopBar = () => {
             </TouchableOpacity>
             
             <View >
-                <Image style={ styles.venkaLogo } source={ VenkaImagotipo } />
+                <Image style={ styles.venkaLogo } source={ require('../assets/Icons/venka-imagotipo.svg') } />
             </View>
             
             <TouchableOpacity style={ styles.clickable } onPress={ handleMenuButton }>
@@ -34,16 +34,16 @@ export default TopBar
 
 const styles = StyleSheet.create({
     container: {
-        minWidth: '320px',
+        minWidth: 320,
         width: '100%',
-        height: '90px',
+        height: 90,
         display: 'flex',
         flexDirection: 'row',
         backgroundColor: '#73b73e',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '2rem',
-        position: 'fixed',
+        padding: 30,
+        position: 'absolute',
         zIndex: 9999,
     },
     logoContainer: {
@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: 'transparent',
-        cursor: 'pointer',
-        width: '30px',
+        width: 30,
     }
 })
